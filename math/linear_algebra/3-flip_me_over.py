@@ -3,6 +3,7 @@
 Calcula la matriz transpuesta de una matriz dada.
 """
 
+
 def matrix_transpose(matrix):
     new_matrix = []
     for i in range(len(matrix[0])):

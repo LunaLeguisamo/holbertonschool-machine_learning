@@ -3,6 +3,7 @@
 Calcula la forma (dimensiones) de una matriz multidimensional.
 """
 
+
 def matrix_shape(matrix):
     """
     Calcula la forma (dimensiones) de una matriz multidimensional.
