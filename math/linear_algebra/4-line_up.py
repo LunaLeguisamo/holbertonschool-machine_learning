@@ -15,6 +15,8 @@ def matrix_shape(matrix):
     y obtener el número de elementos en
     cada nivel.
     """
+    if not matrix:
+        return []
 
     if not isinstance(matrix[0], list):
         return [len(matrix)]
