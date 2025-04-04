@@ -31,6 +31,11 @@ the same shape
 
 
 def add_matrices2D(mat1, mat2):
+    """
+    Comparo si dos matrices 2D tienen la misma forma,
+    luego creo otra matrix vacia donde agregare dos arrays,
+    creo un array mat3 fuera del bucle, y
+    """
     if matrix_shape(mat1) == matrix_shape(mat2):
         mat3 = []
         for i in range(len(mat1)):
