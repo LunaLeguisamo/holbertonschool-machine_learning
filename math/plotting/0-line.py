@@ -27,6 +27,6 @@ def line():
     """
     y = np.arange(0, 11) ** 3
     plt.figure(figsize=(6.4, 4.8))
-    plt.xlim(0, 11)
+    plt.xlim(0, 10)
     plt.plot(range(11), y, 'r')
     plt.show()
