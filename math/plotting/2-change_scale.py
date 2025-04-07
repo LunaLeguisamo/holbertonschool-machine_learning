@@ -2,18 +2,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-""" Esta función genera un gráfico que muestra el decaimiento
-# exponencial del C-14
-# a lo largo del tiempo, utilizando una escala logarítmica en
-# el eje y.
+"""
+Esta función genera un gráfico que muestra el decaimiento
+exponencial del C-14 a lo largo del tiempo, utilizando una
+escala logarítmica en el eje y.
 """
 
 
 def change_scale():
     """
-    # Creamos un array de valores para el tiempo (en años) con
-    # un rango de 0 a 28,650.
-    # Usamos un intervalo de 5,730 años (vida media del C-14).
+    Creamos un array de valores para el tiempo (en años) con
+    un rango de 0 a 28,650. Usamos un intervalo de 5,730 años
+    (vida media del C-14).
     """
     x = np.arange(0, 28651, 5730)
     r = np.log(0.5)
