@@ -25,8 +25,8 @@ def line():
 
     Muestra el gráfico en una ventana emergente.
     """
-    x = np.arange(0, 11)
     y = np.arange(0, 11) ** 3
     plt.figure(figsize=(6.4, 4.8))
-    plt.plot(x, y, 'r-')
+    plt.plot(y, 'r-')
+    plt.xlim(0, 11)
     plt.show()
