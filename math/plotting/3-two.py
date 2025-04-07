@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-import numpy as np
-import matplotlib.pyplot as plt
 
 """
 The x-axis should be labeled Time (years)
@@ -13,6 +11,9 @@ x ↦ y2 should be plotted with a solid green line
 A legend labeling x ↦ y1 as C-14 and x ↦ y2 as Ra-226 should
 be placed in the upper right hand corner of the plot
 """
+
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def two():
