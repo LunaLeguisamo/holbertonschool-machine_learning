@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-import numpy as np
-import matplotlib.pyplot as plt
 
 """
 Esta función genera un gráfico que muestra el decaimiento
 exponencial del C-14 a lo largo del tiempo, utilizando una
 escala logarítmica en el eje y.
 """
+
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def change_scale():
