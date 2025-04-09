@@ -52,7 +52,7 @@ def all_in_one():
     ax2.set_xlabel("Time (years)", fontsize="x-small")
     ax2.set_ylabel("Fraction Remaining", fontsize="x-small")
     ax2.set_xticks(np.arange(0, 28651, 10000))
-    ax2.plot(x2, y2, color='skyblue')
+    ax2.plot(x2, y2)
     ax2.set_xlim(0, 28651)
     ax2.set_yscale('log')
 
@@ -66,6 +66,8 @@ def all_in_one():
     ax3.plot(x3, y32, label='Ra-226', color="green")
     ax3.set_xlim(0, 20000)
     ax3.legend(fontsize="x-small")
+    ax3.set_ylim(0, 1)
+    ax3.set_yticks(np.arange(0, 1.1, 0.5))
  
     # Quinto subplot
     ax4 = plt.subplot2grid((3, 2), (2, 0), colspan=2)
