@@ -21,13 +21,14 @@ def bars():
     plt.bar(x, fruit[1], bottom=fruit[0], color='yellow',
             label='bananas', width=0.5)
     plt.bar(x, fruit[2], bottom=fruit[0]+fruit[1],
-            color='orange', label='oranges', width=0.5)
+            color='#ff8000', label='oranges', width=0.5)
     plt.bar(x, fruit[3], bottom=fruit[0] + fruit[1] + fruit[2],
             color='#ffe5b4', label='peaches', width=0.5)
-    plt.ylim(0, 80)
 
+    plt.ylim(0, 80)
     plt.xticks(x, ['Farrah', 'Fred', 'Felicia'])
     plt.yticks(np.arange(0, 90, 10))
+
     plt.ylabel("Quantity of Fruit")
     plt.title("Number of Fruit per Person")
     plt.legend()
