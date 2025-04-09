@@ -27,12 +27,45 @@ def all_in_one():
     np.random.seed(5)
     student_grades = np.random.normal(68, 15, 50)
 
-    fig, axs = plt.subplot(3, 2)
-    axs[0, 0] = plt.plot(y0,)
-    axs[0, 1] = plt.scatter(x1, y1)
-    axs[1, 0] = plt.plot(x2, y2)
-    axs[1, 1] = plt.hist(student_grades)  
-    plt.title("All in One")
-    plt.suptitle("")
+    plt.figure(figsize=(7, 6))
+    
+    #Primer subplot
+    ax0 = plt.subplot2grid((3, 2), (0,0))
+    ax0.plot(y0, color='r')
+    ax0.set_xlim(0, 10)
+    
+    #Segundo subplot
+    ax1 = plt.subplot2grid((3, 2), (0,1))
+    ax1.set_title("Men's Height vs Weight", fontsize="x-small")
+    ax1.set_xlabel("Height(in)", fontsize="x-small")
+    ax1.set_ylabel("Weight(lbs)", fontsize="x-small")
+    ax1.scatter(x1, y1, color='purple')
+    
+    #Tercer subplot
+    ax2 = plt.subplot2grid((3, 2), (1,0))
+    ax2.set_title("Exponential Decay of C-14", fontsize="x-small")
+    ax2.set_xlabel("Time (years)", fontsize="x-small")
+    ax2.set_ylabel("Fraction Remaining", fontsize="x-small")
+    ax2.plot(x2, y2, color='blue')
+    ax2.set_xticks(range(0, 28651))
+    ax2.set_xlim(0, 28651)
+    ax2.set_yscale('log')
+
+    #Cuarto subplot
+    ax3 = plt.subplot2grid((3, 2), (1,1))
+    ax3.set_title("Exponential Decay of Radioactive Elements", fontsize="x-small")
+    ax3.set_xlabel("Time (years)", fontsize="x-small")
+    ax3.set_ylabel("Fraction Remaining", fontsize="x-small")
+    ax3.plot(y31, label='C-14', linestyle='--', color='r')
+    ax3.plot(y32, label='Ra-226', color="green")
+    
+    #Quinto subplot
+    ax4 = plt.subplot2grid((3, 2), (2,0), colspan=2)
+    ax4.set_title("Project A", fontsize="x-small")
+    ax4.set_xlabel("Grades", fontsize="x-small")
+    ax4.set_ylabel("Number of Students", fontsize="x-small")
+    plt.suptitle("All in One")
+
     plt.tight_layout()
     plt.show()
+    
