@@ -23,7 +23,7 @@ def poly_derivative(poly):
               or None if input is not a list.
     """
 
-    if not isinstance(poly, list):
+    if not isinstance(poly, list) or poly == []:
         return None
 
     if len(poly) == 1:
