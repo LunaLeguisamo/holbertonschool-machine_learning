@@ -19,8 +19,5 @@ def summation_i_squared(n):
         int: The result of the summation if n is valid, otherwise None
     """
     if n > 0 and isinstance(n, int):
-        a = (n * n * n) / 3
-        e = (n * n) / 2
-        i = n / 6
         return int(n * (n + 1) * (2 * n + 1) / 6)
     return None
