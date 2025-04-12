@@ -22,5 +22,5 @@ def summation_i_squared(n):
         a = (n * n * n) / 3
         e = (n * n) / 2
         i = n / 6
-        return int(a + e + i)
+        return int(n * (n + 1) * (2 * n + 1) / 6)
     return None
