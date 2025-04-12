@@ -26,9 +26,6 @@ def poly_derivative(poly):
     if not isinstance(poly, list):
         return None
 
-    if len(poly) < 2:
-        return [0]
-
     new_poly = []
 
     for i in range(len(poly)):
