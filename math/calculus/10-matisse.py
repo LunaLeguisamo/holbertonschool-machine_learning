@@ -31,6 +31,6 @@ def poly_derivative(poly):
 
     new_poly = []
 
-    for i in range(1, len(poly)):
+    for i in range(len(poly)):
         new_poly.insert(i - 1, poly[i] * i)
-    return new_poly
+    return new_poly[:-1]
