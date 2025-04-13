@@ -52,5 +52,4 @@ def poly_integral(poly, C=0):
 
             # Append the integrated coefficient to the result
             new_poly.append(new_value)
-    
     return new_poly
