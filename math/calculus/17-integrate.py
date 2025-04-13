@@ -8,7 +8,7 @@ constant C (integration constant, default 0),and returns a new list
 representing the integrated polynomial.
 
 The polynomial is represented as a list of coefficients, where the index of
-each value inthe list corresponds to the exponent of the variable x.
+each value in the list corresponds to the exponent of the variable x.
 
 For example, the polynomial 3x^2 + 2x + 1 would be represented as [3, 2, 1].
 
@@ -27,6 +27,7 @@ def poly_integral(poly, C=0):
     poly (list): List of coefficients of the polynomial to integrate.
     C (int): Constant of integration. Defaults to 0.
     """
+    # Check if poly is a valid list and if C is an integer
     if not isinstance(poly, list) or poly == []:
         return None
 
@@ -34,15 +35,22 @@ def poly_integral(poly, C=0):
         return None
 
     new_poly = []
+    new_poly.append(C)
 
     for i in range(len(poly)):
-        if i == 0:
-            new_poly.append(C)
-        elif poly[i] == 0:
+        if poly[i] == 0:
+            # If the coefficient is 0, append 0 to the result
             new_poly.append(0)
-        if poly[i] % (i + 1) == 0:
-            new_value = poly[i] // (i + 1)
         else:
-            new_value = poly[i] / (i + 1)
-        new_poly.append(new_value)
+            # Perform the integration of each term
+            if poly[i] % (i + 1) == 0:
+                # If divisible, use integer division
+                new_value = poly[i] // (i + 1)
+            else:
+                # If not divisible, use float division
+                new_value = poly[i] / (i + 1)
+
+            # Append the integrated coefficient to the result
+            new_poly.append(new_value)
+    
     return new_poly
