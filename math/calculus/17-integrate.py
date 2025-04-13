@@ -37,7 +37,7 @@ def poly_integral(poly, C=0):
     new_poly = []
     new_poly.append(C)
 
-    for i in range(1, len(poly)):
+    for i in range(len(poly)):
         if poly[i] == 0:
             # If the coefficient is 0, append 0 to the result
             new_poly.append(0)
