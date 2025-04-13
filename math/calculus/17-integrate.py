@@ -52,4 +52,8 @@ def poly_integral(poly, C=0):
 
             # Append the integrated coefficient to the result
             new_poly.append(new_value)
+            
+    while len(new_poly) > 1 and new_poly[-1] == 0:
+        new_poly.pop()
+        
     return new_poly
