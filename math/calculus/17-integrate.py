@@ -44,6 +44,5 @@ def poly_integral(poly, C=0):
             new_value = poly[i] // (i + 1)
         else:
             new_value = poly[i] / (i + 1)
-        if new_value != 0:
-            new_poly.append(new_value)
+        new_poly.append(new_value)
     return new_poly
