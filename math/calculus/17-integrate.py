@@ -33,9 +33,6 @@ def poly_integral(poly, C=0):
     if not isinstance(C, int):
         return None
 
-    if poly == [0]:
-        return None
-
     new_poly = []
 
     for i in range(len(poly)):
@@ -47,5 +44,6 @@ def poly_integral(poly, C=0):
             new_value = poly[i] // (i + 1)
         else:
             new_value = poly[i] / (i + 1)
-        new_poly.append(new_value)
+        if new_value != 0:
+            new_poly.append(new_value)
     return new_poly
