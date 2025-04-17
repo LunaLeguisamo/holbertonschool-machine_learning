@@ -21,8 +21,8 @@ class Node:
     Attributes:
         feature (int): Index of the feature to split on.
         threshold (float): Threshold value to split the data.
-        left_child (Node): Left child node.
-        right_child (Node): Right child node.
+        left_child (Node or Leaf): Left child node.
+        right_child (Node or Leaf): Right child node.
         is_leaf (bool): Indicates if the node is a leaf.
         is_root (bool): Indicates if the node is the root of the tree.
         sub_population (list): Subset of data at this node (optional).
@@ -37,8 +37,8 @@ class Node:
         Args:
             feature (int): Feature index to split on.
             threshold (float): Threshold value for the split.
-            left_child (Node): Left child node.
-            right_child (Node): Right child node.
+            left_child (Node or Leaf): Left child node.
+            right_child (Node or Leaf): Right child node.
             is_root (bool): Flag indicating if this is the root node.
             depth (int): Depth level of the node.
         """
@@ -148,6 +148,30 @@ class Node:
         left = self.left_child.get_leaves_below()
         return left + right
 
+    def update_bounds_below(self):
+        """
+        Recursively computes and sets the upper/lower bounds of each node
+        based on feature splits, for potential use in visualization or pruning.
+        """
+        if self.is_root:
+            self.upper = {0: np.inf}
+            self.lower = {0: -1*np.inf}
+
+        if self.left_child:
+            self.left_child.upper = self.upper.copy()
+            self.left_child.lower = self.lower.copy()
+            self.left_child.upper[self.feature] = self.threshold
+            self.left_child.lower[self.feature] = self.threshold
+
+        if self.right_child:
+            self.right_child.upper = self.upper.copy()
+            self.right_child.lower = self.lower.copy()
+            self.right_child.upper[self.feature] = self.threshold
+            self.right_child.lower[self.feature] = self.threshold
+
+        for child in [self.left_child, self.right_child]:
+            child.update_bounds_below()
+
 
 class Leaf(Node):
     """
@@ -191,6 +215,12 @@ class Leaf(Node):
             int: 1
         """
         return 1
+
+    def update_bounds_below(self):
+        """
+        Leaves do not have bounds to update, so this is a no-op.
+        """
+        pass
 
     def __str__(self):
         """
@@ -285,3 +315,9 @@ class Decision_Tree:
             list: List of Leaf objects in the tree.
         """
         return self.root.get_leaves_below()
+
+    def update_bounds(self):
+        """
+        Recursively updates bounds for all nodes in the tree.
+        """
+        self.root.update_bounds_below()
