@@ -58,8 +58,6 @@ class Node:
         If `only_leaves=True`, it counts only leaf nodes.
         """
         count = 0
-        if self.is_leaf:
-            return 1 if only_leaves else 1
 
         if not only_leaves:
             count += 1
