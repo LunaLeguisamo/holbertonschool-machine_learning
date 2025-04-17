@@ -84,8 +84,8 @@ class Node:
         return (new_text)
 
     def __str__(self):
-        result = f"{'root' if self.is_root else '-> node'}\
-                [feature={self.feature}, treshold={self.threshold}]\n"
+        result = (f"{'root' if self.is_root else '-> node'} "
+                  f"[feature={self.feature}, threshold={self.threshold}]\n")
         if self.left_child:
             result +=\
                 self.left_child_add_prefix(self.left_child.__str__().strip())
