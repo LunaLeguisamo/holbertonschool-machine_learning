@@ -47,8 +47,10 @@ class Node:
         Returns:
             int: Maximum depth of the subtree rooted at this node.
         """
-        left = self.left_child.max_depth_below() if self.left_child else self.depth
-        right = self.right_child.max_depth_below() if self.right_child else self.depth
+        left = self.left_child.max_depth_below()\
+            if self.left_child else self.depth
+        right = self.right_child.max_depth_below()\
+            if self.right_child else self.depth
 
         return max(left, right)
 
@@ -57,7 +59,8 @@ class Node:
         Counts the number of nodes below this node, including itself.
 
         Args:
-            only_leaves (bool): If True, count only leaf nodes. Otherwise, count all nodes.
+            only_leaves (bool): If True, count only leaf nodes. Otherwise,
+            count all nodes.
 
         Returns:
             int: Number of nodes or leaf nodes in the subtree.
