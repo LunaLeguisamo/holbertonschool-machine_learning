@@ -157,13 +157,13 @@ class Node:
             self.upper = {0: np.inf}
             self.lower = {0: -1*np.inf}
 
-        if self.left_child:
+        if isinstance(self.left_child, Node):
             self.left_child.upper = self.upper.copy()
             self.left_child.lower = self.lower.copy()
             self.left_child.upper[self.feature] = self.threshold
             self.left_child.lower[self.feature] = self.threshold
 
-        if self.right_child:
+        if isinstance(self.right_child, Node):
             self.right_child.upper = self.upper.copy()
             self.right_child.lower = self.lower.copy()
             self.right_child.upper[self.feature] = self.threshold
