@@ -233,7 +233,7 @@ class Leaf(Node):
         """Returns list containing this leaf."""
         return [self]
 
-    def pred(self):
+    def pred(self, x):
         return self.value
 
 
