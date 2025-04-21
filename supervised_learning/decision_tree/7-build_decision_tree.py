@@ -301,3 +301,76 @@ class Decision_Tree:
 
     def pred(self, x):
         return self.root.pred(x)
+    
+    def np_extrema(self,arr):
+        return np.min(arr), np.max(arr)
+
+    def fit(self,explanatory, target,verbose=0) :
+        if self.split_criterion == "random" : 
+                self.split_criterion = self.random_split_criterion
+        else : 
+                self.split_criterion = self.Gini_split_criterion     <--- to be defined later
+        self.explanatory = explanatory
+        self.target      = target
+        self.root.sub_population = np.ones_like(self.target,dtype='bool')
+
+        self.fit_node(self.root)     <--- to be defined later
+
+        self.update_predict()     <--- defined in the previous task
+
+        if verbose==1 :
+                print(f"""  Training finished.
+        - Depth                     : { self.depth()       }
+        - Number of nodes           : { self.count_nodes() }
+        - Number of leaves          : { self.count_nodes(only_leaves=True) }
+        - Accuracy on training data : { self.accuracy(self.explanatory,self.target)    }""")     <--- to be defined later
+                        
+    def random_split_criterion(self, node):
+        diff = 0
+        while diff == 0:
+            feature = self.rng.integers(0,self.explanatory.shape[1])
+            feature_min, feature_max=self.np_extrema(self.explanatory[:,feature][node.sub_population])
+            diff = feature_max-feature_min
+        x = self.rng.uniform()
+        threshold = (1-x) * feature_min + x * feature_max
+        return feature, threshold
+
+    def fit_node(self,node) :
+        node.feature, node.threshold = self.split_criterion(node)
+
+        left_population  =      <--- to be filled
+        right_population =      <--- to be filled
+
+        # Is left node a leaf ?
+        is_left_leaf = self.is_leaf(left_population)
+        
+        if is_left_leaf:
+            node.left_child = self.get_leaf_child(node,left_population)                                                         
+        else:
+            node.left_child = self.get_node_child(node,left_population)
+            self.fit_node(node.left_child)
+
+        # Is right node a leaf ?
+        is_right_leaf = self.is_leaf(right_population)
+
+        if is_right_leaf:
+            node.right_child = self.get_leaf_child(node,right_population)
+        else:
+            node.right_child = self.get_node_child(node,right_population)
+            self.fit_node(node.right_child)    
+
+    def get_leaf_child(self, node, sub_population) :        
+            value =    <-- to be filled
+            leaf_child= Leaf( value )
+            leaf_child.depth=node.depth+1
+            leaf_child.subpopulation=sub_population
+            return leaf_child
+
+    def get_node_child(self, node, sub_population) :        
+            n= Node()
+            n.depth=node.depth+1
+            n.sub_population=sub_population
+            return n
+
+    def accuracy(self, test_explanatory , test_target) :
+            return np.sum(np.equal(self.predict(test_explanatory), test_target))/test_target.size
