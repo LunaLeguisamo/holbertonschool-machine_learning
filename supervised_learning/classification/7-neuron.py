@@ -176,7 +176,7 @@ class Neuron:
         self.__b = self.__b - (alpha * db)
 
     def train(self, X, Y, iterations=5000, alpha=0.05,
-              verbose=True, graph=True, step=3000):
+              verbose=True, graph=True, step=100):
         """
         Trains the neuron by performing gradient descent.
 
@@ -221,7 +221,7 @@ class Neuron:
         if verbose == True:
                 print(f"Cost after 0 iterations: {cost}")
 
-        for i in range(1, iterations): 
+        for i in range(1, iterations + 1): 
             self.__A = self.forward_prop(X)
             self.gradient_descent(X, Y, self.__A, alpha)
             pred, cost = self.evaluate(X, Y)
@@ -231,12 +231,16 @@ class Neuron:
                 costs.append(cost)
 
         if graph == True:
-            plt.line(iteration, costs, color="blue")
+            plt.plot(iteration, costs, color="blue")
             plt.title("Training Cost")
             plt.xlabel("iteration")
             plt.ylabel("cost")
             plt.xlim(0, iterations)
-            plt.ylim(0, max(costs), 1)
+            plt.ylim(0, max(costs))
+            yticks = np.arange(0, np.ceil(max(costs)), 1)
+            plt.yticks(yticks)
+            xticks = np.arange(0, 3000, 500)
+            plt.xticks(xticks)
             plt.show()
             
         return pred, cost
