@@ -228,7 +228,7 @@ class Neuron:
             if verbose == True and i % step == 0:
                 print(f"Cost after {i} iterations: {cost}")
                 iteration.append(i)
-                costs.append(cost)
+                costs.append(self.cost(Y, self.__A))
 
         if graph == True:
             plt.plot(iteration, costs, color="blue")
@@ -239,7 +239,7 @@ class Neuron:
             plt.ylim(0, max(costs))
             yticks = np.arange(0, np.ceil(max(costs)), 1)
             plt.yticks(yticks)
-            xticks = np.arange(0, 3000, 500)
+            xticks = np.arange(0, np.ceil(3500), 500)
             plt.xticks(xticks)
             plt.show()
             
