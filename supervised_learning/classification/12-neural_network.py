@@ -136,21 +136,28 @@ class NeuralNetwork:
 
     def evaluate(self, X, Y):
         """
-        Evaluates the neuron’s predictions.
+        Evaluates the predictions of the neural network.
 
         Parameters:
-            X (numpy.ndarray): Shape (nx, m) containing the input data.
-                nx: number of input features.
-                m: number of examples.
-            Y (numpy.ndarray): Shape (1, m) containing the correct
-            labels for the input data.
+        X (numpy.ndarray): Input data of shape (nx, m),
+            where nx is the number of input features and m is
+            the number of examples.
+        Y (numpy.ndarray): Correct labels for the input data,
+        of shape (1, m).
 
         Returns:
-            tuple: predicted labels and the cost.
-                - prediction (numpy.ndarray): shape (1, m) with predicted
-                labels (1 if A >= 0.5, else 0).
-                - cost (float): cost of the predictions using logistic
-                regression loss.
+        tuple: (prediction, cost)
+            - prediction (numpy.ndarray): Array of shape (1, m)
+            containing the predicted labels
+            (1 if the output activation is >= 0.5, 0 otherwise).
+            - cost (float): Cost of the predictions compared to the
+            correct labels.
+
+        Process:
+        - Performs forward propagation to calculate the activations.
+        - Calculates the cost using the predicted activations and the
+        true labels.
+        - Generates predictions by thresholding the output activation at 0.5.
         """
         A1, A2 = self.forward_prop(X)
         cost = self.cost(Y, A2)
