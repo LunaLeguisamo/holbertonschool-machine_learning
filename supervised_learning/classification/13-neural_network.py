@@ -165,6 +165,29 @@ class NeuralNetwork:
         return pred, cost
 
     def gradient_descent(self, X, Y, A1, A2, alpha=0.05):
+        """
+        Performs one step of gradient descent to update the weights
+        and biases of the neural network using the gradients computed
+        during backpropagation.
+
+        Parameters:
+        X (ndarray): Input data with shape (nx, m), where nx is the
+        number of feature and m is the number of examples.
+        Y (ndarray): True labels for the input data, with shape (1, m).
+        A1 (ndarray): The activation values of the first layer (hidden layer),
+        with shape (n1, m).
+        A2 (ndarray): The activation values of the second layer (output layer),
+        with shape (1, m).
+        alpha (float): The learning rate for gradient descent.
+
+        Updates:
+        - The weights (`__W1`, `__W2`) and biases (`__b1`, `__b2`) are updated
+        in place using the gradient descent rule, based on the computed
+        gradients.
+
+        Example:
+        nn.gradient_descent(X_train, Y_train, A1, A2, alpha=0.01)
+        """
         m = X.shape[1]
         dz2 = A2 - Y
         dz1 = (self.__W2.T @ dz2) * (A1 * (1 - A1))

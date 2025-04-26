@@ -184,6 +184,9 @@ class NeuralNetwork:
         - The weights (`__W1`, `__W2`) and biases (`__b1`, `__b2`) are updated
         in place using the gradient descent rule, based on the computed
         gradients.
+                
+        Example:
+        nn.gradient_descent(X_train, Y_train, A1, A2, alpha=0.01)
         """
         m = X.shape[1]
         dz2 = A2 - Y
