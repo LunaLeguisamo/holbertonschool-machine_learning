@@ -182,7 +182,8 @@ class NeuralNetwork:
 
         Updates:
         - The weights (`__W1`, `__W2`) and biases (`__b1`, `__b2`) are updated
-        in place using the gradient descent rule, based on the computed gradients.
+        in place using the gradient descent rule, based on the computed
+        gradients.
         """
         m = X.shape[1]
         dz2 = A2 - Y
