@@ -162,4 +162,17 @@ class NeuralNetwork:
         A1, A2 = self.forward_prop(X)
         cost = self.cost(Y, A2)
         pred = np.where(A2 >= 0.5, 1, 0)
-        return pred, cost 
+        return pred, cost
+
+    def gradient_descent(self, X, Y, A1, A2, alpha=0.05):
+        m = X.shape[1]
+        dz2 = A2 - Y
+        dz1 = (self.__W2.T @ dz2) * (A1 * (1 - A1))
+        dw1 = 1/m * dz1 @ X.T
+        db1 = 1/m * np.sum(dz1, axis=1, keepdims=True)
+        dw2 = 1/m * dz2 @ A1.T
+        db2 = 1/m * np.sum(dz2, axis=1, keepdims=True)
+        self.__W1 = self.__W1 - (alpha * dw1)
+        self.__b1 = self.__b1 - (alpha * db1)
+        self.__W2 = self.__W2 - (alpha * dw2)
+        self.__b2 = self.__b2 - (alpha * db2)
