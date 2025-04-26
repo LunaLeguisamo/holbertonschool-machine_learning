@@ -235,12 +235,6 @@ class Neuron:
             plt.title("Training Cost")
             plt.xlabel("iteration")
             plt.ylabel("cost")
-            plt.xlim(0, iterations)
-            plt.ylim(0, max(costs))
-            yticks = np.arange(0, np.ceil(max(costs)), 1)
-            plt.yticks(yticks)
-            xticks = np.arange(0, np.ceil(3500), 500)
-            plt.xticks(xticks)
             plt.show()
             
         return pred, cost
