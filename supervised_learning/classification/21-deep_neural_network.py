@@ -149,29 +149,30 @@ class DeepNeuralNetwork:
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
-        Calculates one pass of gradient descent on the neural network
+        Calculates one pass of gradient descent on the neural
+        network
 
         Parameters:
         - Y (numpy.ndarray): Correct labels for the input data
-        - cache (dict): Dictionary containing all intermediary values of the
-        network
+        - cache (dict): Dictionary containing all intermediary values of
+        the network
         - alpha (float): Learning rate
         """
         m = Y.shape[1]
         L = self.__L
-        weights = self.__weights.copy()
 
-        for i in reversed(range(1, L+1)):
-            A_prev = cache['A' + str(i - 1)]
+        for i in reversed(range(1, L + 1)):
             A = cache['A' + str(i)]
+            A_prev = cache['A' + str(i - 1)]
 
             if i == L:
                 dz = A - Y
             else:
-                dz = np.matmul(weights['W' + str(i + 1)].T, dz) * (A * (1 - A))
+                W_next = self.__weights['W' + str(i + 1)]
+                dz = np.matmul(W_next.T, dz) * (A * (1 - A))
 
-            dw = 1/m * dz @ A_prev.T
-            db = 1/m * np.sum(dz, axis=1, keepdims=True)
+            dw = (1 / m) * np.matmul(dz, A_prev.T)
+            db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
 
             self.__weights['W' + str(i)] -= alpha * dw
             self.__weights['b' + str(i)] -= alpha * db
