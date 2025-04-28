@@ -174,3 +174,4 @@ class Neuron:
         db = 1/m * np.sum(dz)
         self.__W = self.__W - (alpha * dw)
         self.__b = self.__b - (alpha * db)
+            

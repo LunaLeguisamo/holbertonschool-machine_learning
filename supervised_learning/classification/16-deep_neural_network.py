@@ -40,7 +40,7 @@ class DeepNeuralNetwork:
         self.weights = {}
 
         for i in range(1, self.L):
-            if not (isinstance(layers[i], int) and layers[i] > 0):
+            if not isinstance(layers[i], int) and layers[i] > 0:
                 raise TypeError("layers must be a list of positive integers")
             else:
                 if i == 1:
