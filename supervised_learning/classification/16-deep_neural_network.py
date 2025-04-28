@@ -39,18 +39,19 @@ class DeepNeuralNetwork:
         self.cache = {}
         self.weights = {}
 
-        for i in range(1, self.L):
-            if not isinstance(layers[i], int) and layers[i] > 0:
+        prev_nodes = nx
+
+        for i in range(self.L):
+            if not isinstance(layers[i], int) or layers[i] < 0:
                 raise TypeError("layers must be a list of positive integers")
-            else:
-                if i == 1:
-                    prev_nodes = nx
-                else:
-                    prev_nodes = layers[i - 2]
 
-                self.weights["W" + str(i)] = (
-                    np.random.randn(layers[i - 1], prev_nodes)
-                    * np.sqrt(2 / prev_nodes)
-                    )
+            # Pesos inicializados con He initialization
+            self.weights["W" + str(i)] = (
+                np.random.randn(layers[i], prev_nodes)
+                * np.sqrt(2 / prev_nodes)
+                )
 
-                self.weights["b" + str(i)] = np.zeros((layers[i - 1], 1))
+            # Bias inicializados en ceros
+            self.weights["b" + str(i)] = np.zeros((layers[i], 1))
+
+            prev_nodes = layers[i]
