@@ -176,3 +176,5 @@ class DeepNeuralNetwork:
 
             self.__weights['W' + str(i)] -= alpha * dw
             self.__weights['b' + str(i)] -= alpha * db
+
+        return self.__weights
