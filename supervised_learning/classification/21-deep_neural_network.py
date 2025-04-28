@@ -174,5 +174,7 @@ class DeepNeuralNetwork:
             dw = (1 / m) * np.matmul(dz, A_prev.T)
             db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
 
-            self.__weights['W' + str(i)] -= alpha * dw
-            self.__weights['b' + str(i)] -= alpha * db
+            self.__weights['W' + str(i)] =\
+            self.__weights['W' + str(i)] - alpha * dw
+            self.__weights['b' + str(i)] =\
+                self.__weights['W' + str(i)] - alpha * db
