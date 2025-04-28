@@ -46,12 +46,12 @@ class DeepNeuralNetwork:
                 raise TypeError("layers must be a list of positive integers")
 
             # Pesos inicializados con He initialization
-            self.weights["W" + str(i)] = (
+            self.weights["W" + str(i + 1)] = (
                 np.random.randn(layers[i], prev_nodes)
                 * np.sqrt(2 / prev_nodes)
                 )
 
             # Bias inicializados en ceros
-            self.weights["b" + str(i)] = np.zeros((layers[i], 1))
+            self.weights["b" + str(i + 1)] = np.zeros((layers[i], 1))
 
             prev_nodes = layers[i]
