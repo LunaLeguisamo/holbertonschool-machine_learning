@@ -160,17 +160,19 @@ class DeepNeuralNetwork:
         """
         m = Y.shape[1]
         L = self.__L
-        dz = A - Y
 
         for i in reversed(range(1, L + 1)):
             A = cache['A' + str(i)]
             A_prev = cache['A' + str(i - 1)]
 
+            if i == L:
+                dz = A - Y
+            else:
+                W_next = self.__weights['W' + str(i + 1)]
+                dz = np.dot(W_next.T, dz) * (A * (1 - A))
+
             dw = (1 / m) * np.dot(dz, A_prev.T)
             db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
-
-            W_next = self.__weights['W' + str(i + 1)]
-            dz = np.dot(W_next.T, dz) * (A * (1 - A))
 
             self.__weights['W' + str(i)] -= alpha * dw
             self.__weights['b' + str(i)] -= alpha * db
