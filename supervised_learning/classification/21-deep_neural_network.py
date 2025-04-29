@@ -169,14 +169,10 @@ class DeepNeuralNetwork:
                 dz = A - Y
             else:
                 W_next = self.__weights['W' + str(i + 1)]
-<<<<<<< HEAD
                 dz = np.matmul(W_next.T, dz) * (A * (1 - A))
-            dw = (1 / m) * np.matmul(dz, A_prev.T)
-=======
-                dz = np.dot(W_next.T, dz) * (A * (1 - A))
 
             dw = (1 / m) * np.dot(dz, A_prev.T)
->>>>>>> a7a4f8322027d23c40009c31d189c40bb7b2ba79
             db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
+
             self.__weights['W' + str(i)] -= alpha * dw
             self.__weights['b' + str(i)] -= alpha * db
