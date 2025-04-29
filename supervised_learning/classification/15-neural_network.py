@@ -204,46 +204,46 @@ class NeuralNetwork:
     def train(self, X, Y, iterations=5000, alpha=0.05,
               verbose=True, graph=True, step=100):
         """
-    Trains the neural network using gradient descent over a
-    specified number of iterations.
-    It also computes the cost after each iteration, optionally
-    displaying or plotting the training progress.
+        Trains the neural network using gradient descent over a
+        specified number of iterations.
+        It also computes the cost after each iteration, optionally
+        displaying or plotting the training progress.
 
-    Parameters:
-    X (ndarray): Input data with shape (nx, m), where nx is the
-    number of features an m is the number of examples.
-    Y (ndarray): True labels for the input data, with shape (1, m).
-    iterations (int): The number of iterations for gradient descent.
-    Default is 5000.
-    alpha (float): The learning rate for gradient descent. Default is 0.05.
-    verbose (bool): Whether to print the cost after each `step` iterations.
-    Default is True.
-    graph (bool): Whether to plot the cost over iterations. Default is True.
-    step (int): The number of iterations between printing the cost
-    (if `verbose` is True).
-    Default is 100.
+        Parameters:
+        X (ndarray): Input data with shape (nx, m), where nx is the
+        number of features an m is the number of examples.
+        Y (ndarray): True labels for the input data, with shape (1, m).
+        iterations (int): The number of iterations for gradient descent.
+        Default is 5000.
+        alpha (float): The learning rate for gradient descent. Default is 0.05.
+        verbose (bool): Whether to print the cost after each `step` iterations.
+        Default is True.
+        graph (bool): Whether to plot the cost over iterations. Default is True.
+        step (int): The number of iterations between printing the cost
+        (if `verbose` is True).
+        Default is 100.
 
-    Returns:
-    pred (ndarray): The predicted labels after training.
-    cost (float): The final cost after training.
+        Returns:
+        pred (ndarray): The predicted labels after training.
+        cost (float): The final cost after training.
 
-    Raises:
-    TypeError: If `iterations` is not an integer, `alpha` is not a float,
-    or `step` is not
-    an integer.
-    ValueError: If `iterations` is not a positive integer, `alpha` is not
-    positive, or `step`
-    is not positive or greater than zero and less than or equal to
-    `iterations`.
+        Raises:
+        TypeError: If `iterations` is not an integer, `alpha` is not a float,
+        or `step` is not
+        an integer.
+        ValueError: If `iterations` is not a positive integer, `alpha` is not
+        positive, or `step`
+        is not positive or greater than zero and less than or equal to
+        `iterations`.
 
-    Process:
-    1. Validate input arguments for type and range.
-    2. Initialize a list to store the cost at each iteration.
-    3. Print the cost after every `step` iterations if `verbose` is True.
-    4. Optionally plot the cost as a function of iteration if `graph`
-    is True.
-    5. Return the predicted labels (`pred`) and final cost (`cost`).
-    """
+        Process:
+        1. Validate input arguments for type and range.
+        2. Initialize a list to store the cost at each iteration.
+        3. Print the cost after every `step` iterations if `verbose` is True.
+        4. Optionally plot the cost as a function of iteration if `graph`
+        is True.
+        5. Return the predicted labels (`pred`) and final cost (`cost`).
+        """
         if not isinstance(iterations, int):
             raise TypeError("iterations must be an integer")
         if iterations < 0:

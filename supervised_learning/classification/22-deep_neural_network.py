@@ -173,6 +173,58 @@ class DeepNeuralNetwork:
             db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
             self.__weights['W' + str(i)] -= alpha * dw
             self.__weights['b' + str(i)] -= alpha * db
-    
-        def train(self, X, Y, iterations=5000, alpha=0.05):
-            
+
+    def train(self, X, Y, iterations=5000, alpha=0.05):
+        """
+        Trains the deep neural network using gradient descent.
+
+        Parameters:
+        - X (numpy.ndarray): Input data of shape (nx, m), where
+        nx is the number of features and m is the number of examples.
+        - Y (numpy.ndarray): Correct labels for the input data,
+        shape (1, m).
+        - iterations (int): The number of iterations to train the model.
+        Default is 5000.
+        - alpha (float): The learning rate to be used in gradient descent.
+        Default is 0.05.
+
+        Returns:
+        - tuple: (prediction, cost)
+            - prediction (numpy.ndarray): Array of shape (1, m) containing
+            the predicted labels.
+            - cost (float): The cost of the predictions compared to the true
+            labels.
+
+        Process:
+        - Validates input types and values for `iterations` and `alpha`.
+        - Performs `iterations` number of forward propagation and
+        backpropagation
+        steps.
+        - After each iteration, the model adjusts its weights using gradient
+        descent.
+        - After all iterations, it evaluates the model's performance
+        (predictions and cost).
+
+        Notes:
+        - `forward_prop` calculates activations from the input data, storing
+        intermediate values in `cache`.
+        - `gradient_descent` updates the model's weights using the
+        backpropagated
+        gradients.
+        - `evaluate` is used to calculate the final predictions and cost.
+        """
+        if not isinstance(iterations, int):
+            raise TypeError("iterations must be an integer")
+        if iterations <= 0:
+            raise ValueError("iterations must be a positive integer")
+        if not isinstance(alpha, float):
+            raise TypeError("alpha must be a float")
+        if alpha <= 0:
+            raise ValueError("alpha must be positive")
+
+        for i in range(iterations):
+            self.forward_prop(X)
+            self.gradient_descent(Y, self.__cache, alpha)
+
+        pred, cost = self.evaluate(X, Y)
+        return pred, cost
