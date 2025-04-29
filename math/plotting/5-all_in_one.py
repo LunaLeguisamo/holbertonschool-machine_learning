@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+<<<<<<< HEAD
+import numpy as np
+import matplotlib.pyplot as plt
+
+def all_in_one():
+
+=======
 """
 all in one
 """
@@ -10,6 +17,7 @@ def all_in_one():
     """
     all in one
     """
+>>>>>>> accdfe27f282a8e55e6d21d89620a8da22067ea8
     y0 = np.arange(0, 11) ** 3
 
     mean = [69, 0]
@@ -33,6 +41,9 @@ def all_in_one():
     np.random.seed(5)
     student_grades = np.random.normal(68, 15, 50)
 
+<<<<<<< HEAD
+    plt.axis()
+=======
     fig = plt.figure()
 
     fig.suptitle('All in One')
@@ -77,3 +88,4 @@ def all_in_one():
 
     plt.tight_layout()
     plt.show()
+>>>>>>> accdfe27f282a8e55e6d21d89620a8da22067ea8
