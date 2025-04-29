@@ -160,7 +160,6 @@ class DeepNeuralNetwork:
         """
         m = Y.shape[1]
         L = self.__L
-        dz = 0
 
         for i in reversed(range(1, L + 1)):
             A = cache['A' + str(i)]
@@ -174,3 +173,6 @@ class DeepNeuralNetwork:
             db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
             self.__weights['W' + str(i)] -= alpha * dw
             self.__weights['b' + str(i)] -= alpha * db
+    
+        def train(self, X, Y, iterations=5000, alpha=0.05):
+            
