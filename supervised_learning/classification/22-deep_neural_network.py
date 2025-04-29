@@ -149,30 +149,36 @@ class DeepNeuralNetwork:
 
     def gradient_descent(self, Y, cache, alpha=0.05):
         """
-        Calculates one pass of gradient descent on the neural
-        network
+        Performs one pass of gradient descent on the neural network
 
         Parameters:
-        - Y (numpy.ndarray): Correct labels for the input data
-        - cache (dict): Dictionary containing all intermediary values of
-        the network
+        - Y (numpy.ndarray): Correct labels, shape (1, m)
+        - cache (dict): Dictionary containing all intermediary values
+        of the network
         - alpha (float): Learning rate
         """
         m = Y.shape[1]
         L = self.__L
+        weights_copy = self.__weights.copy()
 
         for i in reversed(range(1, L + 1)):
-            A = cache['A' + str(i)]
-            A_prev = cache['A' + str(i - 1)]
+            A = cache["A" + str(i)]
+            A_prev = cache["A" + str(i - 1)]
+
             if i == L:
-                dz = A - Y
+                dZ = A - Y
             else:
-                W_next = self.__weights['W' + str(i + 1)]
-                dz = np.matmul(W_next.T, dz) * (A * (1 - A))
-            dw = (1 / m) * np.matmul(dz, A_prev.T)
-            db = (1 / m) * np.sum(dz, axis=1, keepdims=True)
-            self.__weights['W' + str(i)] -= alpha * dw
-            self.__weights['b' + str(i)] -= alpha * db
+                W_next = weights_copy["W" + str(i + 1)]
+                dZ = dA_prev * A * (1 - A)
+
+            dW = np.dot(dZ, A_prev.T) / m
+            db = np.sum(dZ, axis=1, keepdims=True) / m
+
+            if i > 1:
+                dA_prev = np.dot(weights_copy["W" + str(i)].T, dZ)
+
+            self.__weights["W" + str(i)] -= alpha * dW
+            self.__weights["b" + str(i)] -= alpha * db
 
     def train(self, X, Y, iterations=5000, alpha=0.05):
         """
