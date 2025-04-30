@@ -262,6 +262,19 @@ class DeepNeuralNetwork:
         return pred, cost
 
     def save(self, filename):
+        """
+        Saves the instance object to a file in pickle format.
+
+        Parameters:
+        - filename (str): The file path where the object will be saved.
+          If the file does not end with '.pkl', the extension will be added.
+
+        Returns:
+        - None
+
+        Notes:
+        - The object is serialized using pickle and written in binary mode.
+        """
         if not filename:
             return None
         if not filename.endswith('.pkl'):
@@ -271,6 +284,18 @@ class DeepNeuralNetwork:
 
     @staticmethod
     def load(filename):
+        """
+        Loads a pickled DeepNeuralNetwork object from a file.
+
+        Parameters:
+        - filename (str): The file path from which to load the object.
+
+        Returns:
+        - DeepNeuralNetwork object if successful, otherwise None.
+
+        Notes:
+        - Handles the case where the file does not exist (FileNotFoundError).
+        """
         try:
             with open(filename, "rb") as f:
                 return pk.load(f)
