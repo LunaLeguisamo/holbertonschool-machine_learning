@@ -8,6 +8,7 @@ os.environ['PYTHONHASHSEED'] = str(SEED)
 os.environ['TF_ENABLE_ONEDNN_OPTS']= '0'
 import random
 random.seed(SEED)
+
 import numpy as np
 np.random.seed(SEED)
 import tensorflow as tf
