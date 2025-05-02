@@ -4,10 +4,7 @@ This module defines a function to build a sequential Keras model
 with L2 regularization and dropout applied to each layer.
 """
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
-from tensorflow.keras.regularizers import l2
-
+import tensorflow.keras as K
 
 def build_model(nx, layers, activations, lambtha, keep_prob):
     """
@@ -23,21 +20,21 @@ def build_model(nx, layers, activations, lambtha, keep_prob):
     Returns:
         keras.models.Sequential: The constructed Keras model.
     """
-    model = Sequential()
+    model = K.Sequential()
     for i in range(len(layers)):
         if i == 0:
-            model.add(Dense(
+            model.add(K.layers.Dense(
                 units=layers[i],
                 activation=activations[i],
-                kernel_regularizer=l2(lambtha),
+                kernel_regularizer=K.l2(lambtha),
                 input_shape=(nx,)
             ))
         else:
-            model.add(Dense(
+            model.add(K.layers.Dense(
                 units=layers[i],
                 activation=activations[i],
-                kernel_regularizer=l2(lambtha)
+                kernel_regularizer=K.regularizers.l2(lambtha)
             ))
         if i != len(layers) - 1:
-            model.add(Dropout(1 - keep_prob))
+            model.add(K.layers.Dropout(1 - keep_prob))
     return model
