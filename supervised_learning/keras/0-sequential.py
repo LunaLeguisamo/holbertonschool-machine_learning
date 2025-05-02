@@ -5,6 +5,7 @@ with L2 regularization and dropout applied to each layer.
 """
 import tensorflow.keras as K
 
+
 def build_model(nx, layers, activations, lambtha, keep_prob):
     """
     Builds a Keras Sequential model with the given parameters.
