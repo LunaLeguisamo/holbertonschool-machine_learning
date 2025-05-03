@@ -32,4 +32,4 @@ def one_hot(labels, classes=None):
 
     # Convert the labels to a one-hot encoded tensor
     one_hot_matrix = K.backend.one_hot(labels, classes)
-    return one_hot_matrix
+    return one_hot_matrix.numpy()
