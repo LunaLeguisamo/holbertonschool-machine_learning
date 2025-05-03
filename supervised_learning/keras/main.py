@@ -19,31 +19,17 @@ tf.random.set_seed(SEED)
 
 # Imports
 one_hot = __import__('3-one_hot').one_hot
-train_model = __import__('8-train').train_model 
+train_model = __import__('8-train').train_model
 model = __import__('9-model')
+weights = __import__('10-weights')
 
 if __name__ == '__main__':
-    datasets = np.load('MNIST.npz')
-    X_train = datasets['X_train']
-    X_train = X_train.reshape(X_train.shape[0], -1)
-    Y_train = datasets['Y_train']
-    Y_train_oh = one_hot(Y_train)
-    X_valid = datasets['X_valid']
-    X_valid = X_valid.reshape(X_valid.shape[0], -1)
-    Y_valid = datasets['Y_valid']
-    Y_valid_oh = one_hot(Y_valid)
 
-    network = model.load_model('network1.keras')
-    batch_size = 32
-    epochs = 1000
-    train_model(network, X_train, Y_train_oh, batch_size, epochs,
-                validation_data=(X_valid, Y_valid_oh), early_stopping=True,
-                patience=2, learning_rate_decay=True, alpha=0.001)
-    model.save_model(network, 'network2.keras')
-    network.summary()
-    print(network.get_weights())
+    network = model.load_model('network2.keras')
+    weights.save_weights(network, 'weights2.keras')
     del network
 
-    network2 = model.load_model('network2.keras')
-    network2.summary()
+    network2 = model.load_model('network1.keras')
+    print(network2.get_weights())
+    weights.load_weights(network2, 'weights2.keras')
     print(network2.get_weights())
