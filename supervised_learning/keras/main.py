@@ -21,7 +21,8 @@ tf.random.set_seed(SEED)
 build_model = __import__('1-input').build_model
 optimize_model = __import__('2-optimize').optimize_model
 one_hot = __import__('3-one_hot').one_hot
-train_model = __import__('7-train').train_model 
+train_model = __import__('8-train').train_model 
+
 
 if __name__ == '__main__':
     datasets = np.load('MNIST.npz')
@@ -45,4 +46,5 @@ if __name__ == '__main__':
     epochs = 1000
     train_model(network, X_train, Y_train_oh, batch_size, epochs,
                 validation_data=(X_valid, Y_valid_oh), early_stopping=True,
-                patience=3, learning_rate_decay=True, alpha=alpha)
+                patience=3, learning_rate_decay=True, alpha=alpha,
+                save_best=True, filepath='network1.keras')
