@@ -4,7 +4,6 @@ Function that updates a variable using
 the RMSProp optimization algorithm
 """
 
-import tensorflow as tf
 import numpy as np
 
 
