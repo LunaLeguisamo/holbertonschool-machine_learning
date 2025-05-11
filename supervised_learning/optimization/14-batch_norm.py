@@ -24,7 +24,8 @@ def create_batch_norm_layer(prev, n, activation):
     """
 
     initializer = tf.keras.initializers.VarianceScaling(mode='fan_avg')
-    dense = tf.keras.layers.Dense(units=n, kernel_initializer=initializer)(prev)
+    dense = tf.keras.layers.Dense(units=n, kernel_initializer=initializer
+                                  )(prev)
 
     mean, variance = tf.nn.moments(dense, axes=[0])
     epsilon = 1e-7
