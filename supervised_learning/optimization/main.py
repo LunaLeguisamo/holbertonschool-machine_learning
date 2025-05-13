@@ -1,23 +1,11 @@
 #!/usr/bin/env python3
 
+import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-import random
-import os
+learning_rate_decay = __import__('11-learning_rate_decay').learning_rate_decay
 
-SEED = 0
-
-os.environ['PYTHONHASHSEED'] = str(SEED)
-os.environ['TF_ENABLE_ONEDNN_OPTS']= '0'
-random.seed(SEED)
-np.random.seed(SEED)
-tf.random.set_seed(SEED)
-
-create_batch_norm_layer = __import__('14-batch_norm').create_batch_norm_layer
-
-lib= np.load('MNIST.npz')
-X_3D = lib['X_train']
-X = X_3D.reshape((X_3D.shape[0], -1))
-
-a = create_batch_norm_layer(X, 256, tf.nn.tanh)
-print(a)
+if __name__ == '__main__':
+    alpha_init = 0.1
+    for i in range(100):
+        alpha = learning_rate_decay(alpha_init, 1, i, 10)
+        print(alpha)
