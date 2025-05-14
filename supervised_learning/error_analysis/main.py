@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import numpy as np
-precision = __import__('2-precision').precision
+specificity = __import__('3-specificity').specificity
 
 if __name__ == '__main__':
     confusion = np.load('confusion.npz')['confusion']
 
     np.set_printoptions(suppress=True)
-    print(precision(confusion))
+    print(specificity(confusion))
