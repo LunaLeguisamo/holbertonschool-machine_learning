@@ -23,11 +23,12 @@ def l2_reg_gradient_descent(Y, weights, cache, alpha, lambtha, L):
     The weights and biases of the network should be updated in place
     """
     m = Y.shape[1]
+    weights_cpy = weights.copy()
 
     for i in reversed(range(1, L + 1)):
         A = cache['A' + str(i)]
         A_prev = cache['A' + str(i - 1)]
-        W = weights['W' + str(i)]
+        W = weights_cpy['W' + str(i)]
 
         if i == L:
             dZ = A - Y
