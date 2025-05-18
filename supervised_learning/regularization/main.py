@@ -1,39 +1,38 @@
 #!/usr/bin/env python3
 
 import numpy as np
-l2_reg_gradient_descent = __import__('1-l2_reg_gradient_descent').l2_reg_gradient_descent
+import tensorflow as tf
+import os
+import random
 
+SEED = 0
+
+os.environ['PYTHONHASHSEED'] = str(SEED)
+os.environ['TF_ENABLE_ONEDNN_OPTS']= '0'
+random.seed(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+
+l2_reg_cost = __import__('2-l2_reg_cost').l2_reg_cost
 
 def one_hot(Y, classes):
     """convert an array to a one-hot matrix"""
     m = Y.shape[0]
-    one_hot = np.zeros((classes, m))
-    one_hot[Y, np.arange(m)] = 1
-    return one_hot
+    oh = np.zeros((m, classes))
+    oh[np.arange(m), Y] = 1
+    return oh
 
-if __name__ == '__main__':
-    lib= np.load('MNIST.npz')
-    X_train_3D = lib['X_train']
-    Y_train = lib['Y_train']
-    X_train = X_train_3D.reshape((X_train_3D.shape[0], -1)).T
-    Y_train_oh = one_hot(Y_train, 10)
+m = np.random.randint(1000, 2000)
+c = 10
+lib= np.load('MNIST.npz')
 
-    np.random.seed(0)
+X = lib['X_train'][:m].reshape((m, -1))
+Y = one_hot(lib['Y_train'][:m], c)
 
-    weights = {}
-    weights['W1'] = np.random.randn(256, 784)
-    weights['b1'] = np.zeros((256, 1))
-    weights['W2'] = np.random.randn(128, 256)
-    weights['b2'] = np.zeros((128, 1))
-    weights['W3'] = np.random.randn(10, 128)
-    weights['b3'] = np.zeros((10, 1))
+model_reg = tf.keras.models.load_model('model_reg.h5', compile=False)
 
-    cache = {}
-    cache['A0'] = X_train
-    cache['A1'] = np.tanh(np.matmul(weights['W1'], cache['A0']) + weights['b1'])
-    cache['A2'] = np.tanh(np.matmul(weights['W2'], cache['A1']) + weights['b2'])
-    Z3 = np.matmul(weights['W3'], cache['A2']) + weights['b3']
-    cache['A3'] = np.exp(Z3) / np.sum(np.exp(Z3), axis=0)
-    print(weights['W1'])
-    l2_reg_gradient_descent(Y_train_oh, weights, cache, 0.1, 0.1, 3)
-    print(weights['W1'])
+Predictions = model_reg(X)
+cost = tf.keras.losses.CategoricalCrossentropy()(Y, Predictions)
+
+l2_cost = l2_reg_cost(cost,model_reg)
+print(l2_cost)
