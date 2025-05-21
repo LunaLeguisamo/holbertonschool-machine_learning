@@ -5,6 +5,7 @@ Performs a convolution on grayscale images with custom padding.
 
 import numpy as np
 
+
 def convolve_grayscale_padding(images, kernel, padding):
     """
     Applies a convolution operation to multiple grayscale images
@@ -73,6 +74,7 @@ def convolve_grayscale_padding(images, kernel, padding):
     for i in range(h_output):
         for j in range(w_output):
             slice = padded[:, i:i+kh, j:j+kw]       # shape: (m, kh, kw)
-            output[:, i, j] = np.sum(slice * kernel, axis=(1, 2))  # Sum across height and width
+            # Sum across height and width
+            output[:, i, j] = np.sum(slice * kernel, axis=(1, 2))
 
     return output
