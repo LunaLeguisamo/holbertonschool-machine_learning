@@ -34,22 +34,6 @@ def convolve_grayscale_padding(images, kernel, padding):
         - Contains the result of the convolution for each image.
         - h_out = h + 2*ph - kh + 1
         - w_out = w + 2*pw - kw + 1
-
-    Notes
-    -----
-    - Only two for loops are used (as required).
-    - The padding is symmetric on all sides (same value before and after).
-    - Padding prevents the output size from shrinking drastically.
-
-    Example
-    -------
-    >>> import numpy as np
-    >>> images = np.random.rand(10, 28, 28)
-    >>> kernel = np.array([[1, 0, -1], [1, 0, -1], [1, 0, -1]])
-    >>> padding = (2, 4)
-    >>> convolved = convolve_grayscale_padding(images, kernel, padding)
-    >>> print(convolved.shape)
-    (10, 28 + 4 - 3 + 1, 28 + 8 - 3 + 1) → (10, 30, 34)
     """
 
     # Retrieve shapes
