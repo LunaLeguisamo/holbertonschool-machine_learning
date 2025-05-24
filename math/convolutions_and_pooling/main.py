@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 convolve_grayscale = __import__('3-convolve_grayscale').convolve_grayscale
@@ -13,8 +13,10 @@ if __name__ == '__main__':
     kernel = np.array([[1 ,0, -1], [1, 0, -1], [1, 0, -1]])
     images_conv = convolve_grayscale(images, kernel, padding='valid', stride=(2, 2))
     print(images_conv.shape)
-
+    os.makedirs('images_3', exist_ok=True)
     plt.imshow(images[0], cmap='gray')
+    plt.savefig('images_3/01.png')
     plt.show()
     plt.imshow(images_conv[0], cmap='gray')
+    plt.savefig('images_3/02.png')
     plt.show()
