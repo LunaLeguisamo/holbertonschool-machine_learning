@@ -59,7 +59,7 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
                     end_h = start_h + kh
                     start_w = k * sw
                     end_w = start_w + kw
-                    slice = padding[:, start_h:end_h, start_w:end_w, :]
+                    slice = padding[i, start_h:end_h, start_w:end_w, :]
                     output[i, j, k, c] = np.sum(
                         slice * W[:, :, :, c]) + b[0, 0, 0, c]
 
