@@ -46,8 +46,8 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     padding = np.pad(A_prev, pad_width=((0, 0), (ph, ph), (pw, pw), (0, 0)),
                      mode='constant', constant_values=0)
 
-    h_output = (h_prev + 2 * ph - kh // sh) + 1
-    w_output = (w_prev + 2 * pw - kw // sw) + 1
+    h_output = ((h_prev + 2 * ph - kh) // sh) + 1
+    w_output = ((w_prev + 2 * pw - kw) // sw) + 1
 
     output = np.zeros((m, h_output, w_output, c_new))
 
