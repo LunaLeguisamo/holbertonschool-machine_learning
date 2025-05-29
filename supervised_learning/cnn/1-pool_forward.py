@@ -44,10 +44,10 @@ def pool_forward(A_prev, kernel_shape, stride=(1, 1), mode='max'):
                     end_h = start_h + kh
                     start_w = k * sw
                     end_w = start_w + kw
-                    slicing = A_prev[i, start_h:end_h, start_w:end_w, :]
+                    slicing = A_prev[i, start_h:end_h, start_w:end_w, c]
                     if mode == 'max':
                         output[i, j, k, c] = np.max(slicing)
-                    if mode == 'avg':
+                    elif mode == 'avg':
                         output[i, j, k, c] = np.mean(slicing)
 
     return output
