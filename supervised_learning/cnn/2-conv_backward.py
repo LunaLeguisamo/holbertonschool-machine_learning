@@ -32,10 +32,11 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     sh is the stride for the height
     sw is the stride for the width
     you may import numpy as np
-    Returns: the partial derivatives with respect to the previous layer (dA_prev),
-    the kernels (dW), and the biases (db), respectively
+    Returns: the partial derivatives with respect to the
+    previous layer (dA_prev), the kernels (dW), and the biases (db),
+    respectively
     """
-    
+
     m, h_prev, w_prev, c_prev = A_prev.shape
     kh, kw, _, c_new = W.shape
     sh, sw = stride
@@ -71,15 +72,18 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                     horiz_end = horiz_start + kw
 
                     # Slice the region
-                    a_slice = a_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :]
+                    a_slice = a_prev_pad[vert_start:vert_end,
+                                         horiz_start:horiz_end, :]
 
                     # Update gradients
-                    da_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :] += W[:, :, :, c] * dZ[i, h, w, c]
+                    da_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :]
+                    += W[:, :, :, c] * dZ[i, h, w, c]
                     dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
 
         # Save the updated dA_prev for the i-th example
         if padding == "same":
-            dA_prev[i, :, :, :] = da_prev_pad[ph:-ph or None, pw:-pw or None, :]
+            dA_prev[i, :, :, :] = da_prev_pad[ph:-ph or None,
+                                              pw:-pw or None, :]
         else:
             dA_prev[i, :, :, :] = da_prev_pad
 
