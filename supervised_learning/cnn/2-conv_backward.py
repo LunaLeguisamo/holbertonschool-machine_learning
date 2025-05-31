@@ -41,58 +41,45 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     kh, kw, _, _ = W.shape
     sh, sw = stride
 
-    # Inicializar gradientes
-    dA_prev = np.zeros_like(A_prev)
-    dW = np.zeros_like(W)
-    db = np.zeros_like(b)
-
     # Calcular padding si es necesario
-    if padding == 'same':
-        ph = ((h_new - 1) * sh + kh - h_prev) // 2
-        pw = ((w_new - 1) * sw + kw - w_prev) // 2
-    else:
+    if padding == 'valid':
         ph, pw = 0, 0
-
+    elif padding == 'same':
+        ph = ((h_prev - 1) * sh + kh - h_prev) // 2 + 1
+        pw = ((w_prev - 1) * sw + kw - w_prev) // 2 + 1
+    else:
+        ph, pw = padding
+        
     # Padding para A_prev y su gradiente
     A_prev_pad = np.pad(A_prev,
                         pad_width=((0, 0), (ph, ph), (pw, pw), (0, 0)),
-                        mode='constant', constant_values=0)
-    dA_prev_pad = np.pad(dA_prev,
-                         pad_width=((0, 0), (ph, ph), (pw, pw), (0, 0)),
-                         mode='constant', constant_values=0)
-
+                        mode='constant')
+    #dA_prev_pad = np.pad(dA_prev,
+    #                     pad_width=((0, 0), (ph, ph), (pw, pw), (0, 0)),
+    #\                     mode='constant')
+    
+    # Inicializar gradientes
+    dA_prev_pad = np.zeros_like(A_prev_pad)
+    dW = np.zeros_like(W)
+    db = db = np.sum(dZ, axis=(0, 1, 2), keepdims=True)
+    
     # Loop para cada ejemplo del batch
-    for i in range(m):
-        a_prev_pad = A_prev_pad[i]
-        da_prev_pad = dA_prev_pad[i]
+    for h in range(h_new):
+        for w in range(w_new):
+            for c in range(c_new):
+                # Encontrar corners de la ventana
+                vert_start = h * sh
+                vert_end = vert_start + kh
+                horiz_start = w * sw
+                horiz_end = horiz_start + kw
 
-        for h in range(h_new):
-            for w in range(w_new):
-                for c in range(c_new):
-                    # Encontrar corners de la ventana
-                    vert_start = h * sh
-                    vert_end = vert_start + kh
-                    horiz_start = w * sw
-                    horiz_end = horiz_start + kw
-
-                    # Slice
-                    a_slice = a_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :]
-
-                    # Calcular gradientes
-                    da_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :] += W[:, :, :, c] * dZ[i, h, w, c]
-                    dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
-                    db[:, :, :, c] += dZ[i, h, w, c]
-
-        # Guardar en batch
-        dA_prev_pad[i] = da_prev_pad
+                # Calcular gradientes
+                dA_prev_pad[:, vert_start:vert_end, horiz_start:horiz_end, :] += (W[:, :, :, c] * dZ[:, h, w, c, np.newaxis, np.newaxis, np.newaxis])
+                dW[:, :, :, c] += np.sum(A_prev_pad[:, vert_start:vert_end, horiz_start:horiz_end, :] * 
+                                            dZ[:, h, w, c, np.newaxis, np.newaxis, np.newaxis], axis=0)
 
     # Recortar padding
     if padding == 'same':
-        if ph == 0 and pw == 0:
-            dA_prev = dA_prev_pad
-        else:
-            dA_prev = dA_prev_pad[:, ph:-ph or None, pw:-pw or None, :]
-    else:
-        dA_prev = dA_prev_pad
+        dA_prev_pad = dA_prev_pad[:, ph:-ph, pw:-pw, :]
 
-    return dA_prev, dW, db
+    return dA_prev_pad, dW, db
