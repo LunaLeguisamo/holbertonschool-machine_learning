@@ -43,7 +43,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     m, h_new, w_new, _ = dZ.shape
 
     # Initialize derivatives
-    dA_prev = np.zeros_like(A_prev)
+    dA_p = np.zeros_like(A_prev)
     dW = np.zeros_like(W)
     db = np.sum(dZ, axis=(0, 1, 2), keepdims=True)
 
@@ -61,27 +61,28 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
 
     for i in range(m):  # loop over the batch of training examples
         a_prev_pad = A_prev_pad[i]
-        da_prev_pad = dA_prev_pad[i]
+        da_ppad = dA_prev_pad[i]
 
         for h in range(h_new):
             for w in range(w_new):
                 for c in range(c_new):
                     start = h * sh
                     end = start + kh
-                    h_start = w * sw
-                    h_end = h_start + kw
+                    h_s = w * sw
+                    h_e = h_s + kw
 
                     # Slice the region
-                    a_slice = a_prev_pad[start:end, h_start:h_end, :]
+                    a_slice = a_prev_pad[start:end, h_s:h_e, :]
 
                     # Update gradients
-                    da_prev_pad[start:end, h_start:h_end, :] += W[:, :, :, c] * dZ[i, h, w, c]
+                    da_ppad[start:end,
+                            h_s:h_e, :] += W[:, :, :, c] * dZ[i, h, w, c]
                     dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
 
         # Save the updated dA_prev for the i-th example
         if padding == "same":
-            dA_prev[i, :, :, :] = da_prev_pad[ph:-ph or None, pw:-pw or None, :]
+            dA_p[i, :, :, :] = da_ppad[ph:-ph or None, pw:-pw or None, :]
         else:
-            dA_prev[i, :, :, :] = da_prev_pad
+            dA_p[i, :, :, :] = da_ppad
 
-    return dA_prev, dW, db
+    return dA_p, dW, db
