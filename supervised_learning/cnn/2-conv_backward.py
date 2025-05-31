@@ -57,7 +57,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
 
     # Pad A_prev and dA_prev
     A_prev_pad = np.pad(A_prev, ((0,), (ph,), (pw,), (0,)), mode='constant')
-    dA_prev_pad = np.pad(dA_prev, ((0,), (ph,), (pw,), (0,)), mode='constant')
+    dA_prev_pad = np.pad(dA_p, ((0,), (ph,), (pw,), (0,)), mode='constant')
 
     for i in range(m):  # loop over the batch of training examples
         a_prev_pad = A_prev_pad[i]
@@ -66,17 +66,16 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
         for h in range(h_new):
             for w in range(w_new):
                 for c in range(c_new):
-                    start = h * sh
-                    end = start + kh
+                    s = h * sh
+                    e = s + kh
                     h_s = w * sw
                     h_e = h_s + kw
 
                     # Slice the region
-                    a_slice = a_prev_pad[start:end, h_s:h_e, :]
+                    a_slice = a_prev_pad[s:e, h_s:h_e, :]
 
                     # Update gradients
-                    da_ppad[start:end,
-                            h_s:h_e, :] += W[:, :, :, c] * dZ[i, h, w, c]
+                    da_ppad[s:e, h_s:h_e, :] += W[:, :, :, c] * dZ[i, h, w, c]
                     dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
 
         # Save the updated dA_prev for the i-th example
