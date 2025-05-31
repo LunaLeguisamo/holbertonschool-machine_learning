@@ -72,8 +72,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                     h_end = h_start + kw
 
                     # Slice the region
-                    a_slice = a_prev_pad[start:end,
-                                         h_start:h_end, :]
+                    a_slice = a_prev_pad[start:end, h_start:h_end, :]
                     w = W[:, :, :, c]
                     d_z = dZ[i, h, w, c]
 
@@ -83,8 +82,7 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
 
         # Save the updated dA_prev for the i-th example
         if padding == "same":
-            dA_prev[i, :, :, :] = da_prev_pad[ph:-ph or None,
-                                              pw:-pw or None, :]
+            dA_prev[i, :, :, :] = da_prev_pad[ph:-ph or None, pw:-pw or None, :]
         else:
             dA_prev[i, :, :, :] = da_prev_pad
 
