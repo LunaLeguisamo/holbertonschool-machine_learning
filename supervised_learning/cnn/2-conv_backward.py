@@ -73,11 +73,9 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
 
                     # Slice the region
                     a_slice = a_prev_pad[start:end, h_start:h_end, :]
-                    w = W[:, :, :, c]
-                    d_z = dZ[i, h, w, c]
 
                     # Update gradients
-                    da_prev_pad[start:end, h_start:h_end, :] += w * d_z
+                    da_prev_pad[start:end, h_start:h_end, :] += W[:, :, :, c] * dZ[i, h, w, c]
                     dW[:, :, :, c] += a_slice * dZ[i, h, w, c]
 
         # Save the updated dA_prev for the i-th example
