@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+a
 """
 
 from tensorflow import keras as K
@@ -7,22 +8,7 @@ from tensorflow import keras as K
 
 def identity_block(A_prev, filters):
     """
-    Parameters:
-    - A_prev: tensor of output block (output from the last layer).
-    - filters: tupla o lista con 3 enteros (F11, F3, F12):
-        * F11: número de filtros para la primera conv 1x1
-        * F3: número de filtros para la conv 3x3
-        * F12: número de filtros para la segunda conv 1x1 (final)
-
-    Proceso:
-    - Conv 1x1 → BatchNorm → ReLU
-    - Conv 3x3 → BatchNorm → ReLU
-    - Conv 1x1 → BatchNorm
-    - Suma con la entrada (shortcut)
-    - Activación ReLU final
-
-    Devuelve:
-    - Tensor activado luego de pasar por el bloque de identidad.
+    a
     """
 
     # Desempaquetamos los filtros
