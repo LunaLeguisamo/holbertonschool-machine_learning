@@ -24,7 +24,7 @@ def dense_block(X, nb_filters, growth_rate, layers):
     concat = X
     for i in range(layers):
         # BatchNorm + ReLU
-        X = K.layers.BatchNormalization()(X)
+        X = K.layers.BatchNormalization()(concat)
         X = K.layers.Activation('relu')(X)
         # 1x1 bottleneck convolution
         X = K.layers.Conv2D(
