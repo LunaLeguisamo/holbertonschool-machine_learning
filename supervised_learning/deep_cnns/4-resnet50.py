@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """
-gfhghghffgh
+Builds the ResNet-50 architecture using identity and projection blocks.
 """
 
-import tensorflow.keras as K
+from tensorflow import keras as K
 identity_block = __import__('2-identity_block').identity_block
 projection_block = __import__('3-projection_block').projection_block
 
 
 def resnet50():
     """
-    dfggfgdfgf
+    Builds the ResNet-50 architecture.
+
+    Returns:
+        keras.Model: ResNet-50 model
     """
     init = K.initializers.HeNormal(seed=0)
     X_input = K.Input(shape=(224, 224, 3))
