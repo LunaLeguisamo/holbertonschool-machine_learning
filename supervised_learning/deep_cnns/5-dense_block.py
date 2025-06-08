@@ -49,4 +49,6 @@ def dense_block(X, nb_filters, growth_rate, layers):
         concat = K.layers.Concatenate()([concat, X])
         nb_filters += growth_rate
 
-    return X, nb_filters
+        X = concat
+        
+    return concat, nb_filters
