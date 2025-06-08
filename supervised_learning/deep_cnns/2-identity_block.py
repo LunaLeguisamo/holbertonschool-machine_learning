@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-a
+afgddfgdfg
 """
 
 from tensorflow import keras as K
@@ -8,7 +8,7 @@ from tensorflow import keras as K
 
 def identity_block(A_prev, filters):
     """
-    a
+    adfggfdfg
     """
 
     # Desempaquetamos los filtros
