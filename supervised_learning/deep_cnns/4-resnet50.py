@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Builds the ResNet-50 architecture using identity and projection blocks.
+gfhghghffgh
 """
 
 import tensorflow.keras as K
