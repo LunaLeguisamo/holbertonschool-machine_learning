@@ -15,7 +15,7 @@ def identity_block(A_prev, filters):
     F11, F3, F12 = filters
 
     # Inicializador He Normal con semilla 0
-    he_init = k.initializers.HeNormal(seed=0)
+    he_init = K.initializers.HeNormal(seed=0)
 
     # Primera capa: conv 1x1 → BN → ReLU
     X = K.layers.Conv2D(filters=F11, kernel_size=1, padding='same',
