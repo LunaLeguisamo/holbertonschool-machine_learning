@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """
-Build a identity block like the ResNet paper.
 """
 
 from tensorflow import keras as K
