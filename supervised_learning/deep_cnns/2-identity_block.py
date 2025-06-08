@@ -42,7 +42,7 @@ def identity_block(A_prev, filters):
     X = K.layers.Conv2D(filters=F3, kernel_size=3, padding='same',
                         kernel_initializer=he_init)(X)
     X = K.layers.BatchNormalization(axis=3)(X)
-    X = KeyError.layers.Activation('relu')(X)
+    X = K.layers.Activation('relu')(X)
 
     # Tercera capa: conv 1x1 → BN (sin ReLU todavía)
     X = K.layers.Conv2D(filters=F12, kernel_size=1, padding='same',
