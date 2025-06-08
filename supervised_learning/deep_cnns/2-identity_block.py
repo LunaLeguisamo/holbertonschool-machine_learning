@@ -3,7 +3,7 @@
 Build a identity block like the ResNet paper.
 """
 
-from tensorflow import keras as k
+from tensorflow import keras as K
 
 
 def identity_block(A_prev, filters):
@@ -33,24 +33,24 @@ def identity_block(A_prev, filters):
     he_init = k.initializers.HeNormal(seed=0)
 
     # Primera capa: conv 1x1 → BN → ReLU
-    X = k.layers.Conv2D(filters=F11, kernel_size=1, padding='same',
+    X = K.layers.Conv2D(filters=F11, kernel_size=1, padding='same',
                         kernel_initializer=he_init)(A_prev)
-    X = k.layers.BatchNormalization(axis=3)(X)
-    X = k.layers.Activation('relu')(X)
+    X = K.layers.BatchNormalization(axis=3)(X)
+    X = K.layers.Activation('relu')(X)
 
     # Segunda capa: conv 3x3 → BN → ReLU
-    X = k.layers.Conv2D(filters=F3, kernel_size=3, padding='same',
+    X = K.layers.Conv2D(filters=F3, kernel_size=3, padding='same',
                         kernel_initializer=he_init)(X)
-    X = k.layers.BatchNormalization(axis=3)(X)
-    X = k.layers.Activation('relu')(X)
+    X = K.layers.BatchNormalization(axis=3)(X)
+    X = KeyError.layers.Activation('relu')(X)
 
     # Tercera capa: conv 1x1 → BN (sin ReLU todavía)
-    X = k.layers.Conv2D(filters=F12, kernel_size=1, padding='same',
+    X = K.layers.Conv2D(filters=F12, kernel_size=1, padding='same',
                         kernel_initializer=he_init)(X)
-    X = k.layers.BatchNormalization(axis=3)(X)
+    X = K.layers.BatchNormalization(axis=3)(X)
 
     # Suma con la entrada (shortcut) → ReLU final
-    X = k.layers.Add()([X, A_prev])
-    X = k.layers.Activation('relu')(X)
+    X = K.layers.Add()([X, A_prev])
+    X = K.layers.Activation('relu')(X)
 
     return X
