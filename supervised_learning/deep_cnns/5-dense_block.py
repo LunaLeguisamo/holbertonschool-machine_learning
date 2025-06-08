@@ -21,32 +21,32 @@ def dense_block(X, nb_filters, growth_rate, layers):
     - updated number of filters
     """
     he_init = K.initializers.he_normal(seed=0)
-
+    concat = X
     for i in range(layers):
         # BatchNorm + ReLU
-        bn1 = K.layers.BatchNormalization()(X)
-        act1 = K.layers.Activation('relu')(bn1)
+        X = K.layers.BatchNormalization()(X)
+        X = K.layers.Activation('relu')(X)
         # 1x1 bottleneck convolution
-        conv1 = K.layers.Conv2D(
+        X = K.layers.Conv2D(
             filters=4 * growth_rate,
             kernel_size=1,
             padding='same',
             kernel_initializer=he_init,
-            use_bias=False)(act1)
+            use_bias=False)(X)
 
         # BatchNorm + ReLU
-        bn2 = K.layers.BatchNormalization()(conv1)
-        act2 = K.layers.Activation('relu')(bn2)
+        X = K.layers.BatchNormalization()(X)
+        X = K.layers.Activation('relu')(X)
         # 3x3 convolution
-        conv2 = K.layers.Conv2D(
+        X = K.layers.Conv2D(
             filters=growth_rate,
             kernel_size=3,
             padding='same',
             kernel_initializer=he_init,
-            use_bias=False)(act2)
+            use_bias=False)(X)
 
         # Concatenate input with output of this layer
-        X = K.layers.Concatenate()([X, conv2])
+        concat = K.layers.Concatenate()([concat, X])
         nb_filters += growth_rate
 
-    return X, nb_filters + layers * growth_rate
+    return X, nb_filters
