@@ -471,9 +471,7 @@ ________________________________________________________________________________
  average_pooling2d (Average  (None, 1, 1, 2048)           0         ['activation_48[0][0]']       
  Pooling2D)                                                                                       
                                                                                                   
- flatten (Flatten)           (None, 2048)                 0         ['average_pooling2d[0][0]']   
-                                                                                                  
- dense (Dense)               (None, 1000)                 2049000   ['flatten[0][0]']             
+ dense (Dense)               (None, 1, 1, 1000)           2049000   ['average_pooling2d[0][0]']   
                                                                                                   
 ==================================================================================================
 Total params: 25636712 (97.80 MB)

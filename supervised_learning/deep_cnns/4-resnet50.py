@@ -42,12 +42,11 @@ def resnet50():
 
     # Conv5_x
     X = projection_block(X, [512, 512, 2048], s=2)
-    X = identity_block(X, [512, 512, 2048])
-    X = identity_block(X, [512, 512, 2048])
+    for _ in range(2):
+        X = identity_block(X, [512, 512, 2048])
 
     # Average Pooling and output layer
     X = K.layers.AveragePooling2D(pool_size=7, strides=1)(X)
-    X = K.layers.Flatten()(X)
     X = K.layers.Dense(1000, activation='softmax', kernel_initializer=init)(X)
 
     return K.Model(inputs=X_input, outputs=X)
