@@ -10,10 +10,7 @@ projection_block = __import__('3-projection_block').projection_block
 
 def resnet50():
     """
-    Builds the ResNet-50 architecture.
-
-    Returns:
-        keras.Model: ResNet-50 model
+    dfggfgdfgf
     """
     init = K.initializers.HeNormal(seed=0)
     X_input = K.Input(shape=(224, 224, 3))
