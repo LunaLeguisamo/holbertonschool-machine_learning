@@ -27,14 +27,13 @@ def resnet50():
 
     # Conv2_x
     X = projection_block(X, [64, 64, 256], s=1)
-    X = identity_block(X, [64, 64, 256])
-    X = identity_block(X, [64, 64, 256])
+    for _ in range(2):
+        X = identity_block(X, [64, 64, 256])
 
     # Conv3_x
     X = projection_block(X, [128, 128, 512], s=2)
-    X = identity_block(X, [128, 128, 512])
-    X = identity_block(X, [128, 128, 512])
-    X = identity_block(X, [128, 128, 512])
+    for _ in range(3):
+        X = identity_block(X, [128, 128, 512])
 
     # Conv4_x
     X = projection_block(X, [256, 256, 1024], s=2)
