@@ -50,8 +50,8 @@ def densenet121(growth_rate=32, compression=1.0):
         pool_size=7
         )(X)
     op = K.layers.Dense(units=1000,
-                       activation='softmax',
-                       kernel_initializer=he_init)(X)
+                        activation='softmax',
+                        kernel_initializer=he_init)(X)
 
     model = K.Model(inputs=X_input, outputs=op)
     return model
