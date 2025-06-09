@@ -9,21 +9,23 @@ transition_layer = __import__('6-transition_layer').transition_layer
 
 
 def densenet121(growth_rate=32, compression=1.0):
-    """Builds DenseNet-121 with fixed layer names."""
+    """Builds the DenseNet-121 architecture as described in the paper"""
     he_init = K.initializers.he_normal(seed=0)
     X_input = K.Input(shape=(224, 224, 3))
 
-    # Initial Convolution (Name layers explicitly)
-    X = K.layers.BatchNormalization(axis=3)(X_input)
-    X = K.layers.Activation('relu')(X)
+    # Initial convolution (Conv1)
     X = K.layers.Conv2D(
         filters=64,
         kernel_size=7,
         strides=2,
         padding='same',
-        kernel_initializer=he_init)(X)
+        kernel_initializer=he_init,
+        name='conv1/conv')(X_input)
+
+    X = K.layers.BatchNormalization(axis=3, name='conv1/bn')(X)
+    X = K.layers.Activation('relu', name='conv1/relu')(X)
     X = K.layers.MaxPooling2D(
-        pool_size=3, strides=2, padding='same')(X)
+        pool_size=3, strides=2, padding='same', name='pool1')(X)
 
     # Dense Block 1 (6 layers)
     X, nb_filters = dense_block(X, 64, growth_rate, 6)
@@ -46,12 +48,20 @@ def densenet121(growth_rate=32, compression=1.0):
     # Dense Block 4 (16 layers)
     X, nb_filters = dense_block(X, nb_filters, growth_rate, 16)
 
-    X = K.layers.AveragePooling2D(
-        pool_size=7
-        )(X)
-    op = K.layers.Dense(units=1000,
-                        activation='softmax',
-                        kernel_initializer=he_init)(X)
+    # Final batch norm (optional, paper includes it before classifier)
+    X = K.layers.BatchNormalization(axis=3, name='bn')(X)
+    X = K.layers.Activation('relu', name='relu')(X)
 
-    model = K.Model(inputs=X_input, outputs=op)
+    # Global average pooling
+    X = K.layers.GlobalAveragePooling2D(name='avg_pool')(X)
+
+    # Fully connected layer (classifier)
+    op = K.layers.Dense(
+        units=1000,
+        activation='softmax',
+        kernel_initializer=he_init,
+        name='fc1000')(X)
+
+    # Model
+    model = K.Model(inputs=X_input, outputs=op, name="DenseNet121")
     return model
