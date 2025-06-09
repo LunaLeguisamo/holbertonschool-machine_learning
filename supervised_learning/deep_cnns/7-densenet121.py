@@ -9,30 +9,22 @@ transition_layer = __import__('6-transition_layer').transition_layer
 
 
 def densenet121(growth_rate=32, compression=1.0):
-    """
-    Builds the DenseNet-121 architecture as described in Densely Connected
-    Convolutional Networks.
-
-    Args:
-        growth_rate: Growth rate for the dense blocks
-        compression: Compression factor for transition layers
-
-    Returns:
-        The keras model
-    """
+    """Builds DenseNet-121 with fixed layer names."""
     he_init = K.initializers.he_normal(seed=0)
     X_input = K.Input(shape=(224, 224, 3))
 
-    # Initial convolution
+    # Initial Convolution (Name layers explicitly)
     X = K.layers.BatchNormalization()(X_input)
-    X = K.layers.ReLU()(X)
-    X = K.layers.Conv2D(filters=2 * growth_rate,
-                        kernel_size=7,
-                        strides=2,
-                        padding='same',
-                        kernel_initializer=he_init,
-                        use_bias=False)(X)
-    X = K.layers.MaxPooling2D(pool_size=3, strides=2, padding='same')(X)
+    X = K.layers.Activation('relu')(X)
+    X = K.layers.Conv2D(
+        filters=2 * growth_rate,
+        kernel_size=7,
+        strides=2,
+        padding='same',
+        kernel_initializer=he_init,
+        use_bias=False)(X)
+    X = K.layers.MaxPooling2D(
+        pool_size=3, strides=2, padding='same')(X)
 
     # Dense Block 1 (6 layers)
     X, nb_filters = dense_block(X, 2 * growth_rate, growth_rate, 6)
@@ -57,11 +49,12 @@ def densenet121(growth_rate=32, compression=1.0):
 
     # Final layers
     X = K.layers.BatchNormalization()(X)
-    X = K.layers.ReLU()(X)
+    X = K.layers.Activation('relu')(X)  # Fixed naming
     X = K.layers.GlobalAveragePooling2D()(X)
-    X = K.layers.Dense(units=1000, activation='softmax',
-                       kernel_initializer=he_init)(X)
+    X = K.layers.Dense(
+        units=1000,
+        activation='softmax',
+        kernel_initializer=he_init)(X)
 
     model = K.models.Model(inputs=X_input, outputs=X)
-
     return model
