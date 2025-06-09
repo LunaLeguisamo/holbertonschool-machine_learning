@@ -26,7 +26,7 @@ def densenet121(growth_rate=32, compression=1.0):
         pool_size=3, strides=2, padding='same')(X)
 
     # Dense Block 1 (6 layers)
-    X, nb_filters = dense_block(X, 64, growth_rate, growth_rate, 6)
+    X, nb_filters = dense_block(X, 64, growth_rate, 6)
 
     # Transition Layer 1
     X, nb_filters = transition_layer(X, nb_filters, compression)
