@@ -8,28 +8,25 @@ from tensorflow import keras as K
 
 def transition_layer(X, nb_filters, compression):
     """
-    Builds a transition layer as described in Densely Connected Convolutional
-    Networks following DenseNet-C architecture with compression.
-
+    Builds a transition layer for DenseNet with compression.
+    
     Args:
-        X: Output tensor from the previous layer
-        nb_filters: Integer representing the number of filters in X
-        compression: Compression factor for the transition layer
+        X: Tensor, input from previous layer
+        nb_filters: int, number of filters before the transition
+        compression: float, compression factor (0 < compression <= 1)
 
     Returns:
-        Tuple containing:
-        - Output tensor of the transition layer
-        - Integer representing the number of filters in the output
+        Tuple: (output tensor, new number of filters)
     """
     he_init = K.initializers.he_normal(seed=0)
-
-    # Batch Normalization
-    X = K.layers.BatchNormalization()(X)
-
-    # ReLU activation (using ReLU layer instead of Activation('relu'))
-    X = K.layers.ReLU()(X)
-
-    # 1x1 convolution with compression (including bias terms)
+    
+    # Batch Norm
+    X = K.layers.BatchNormalization(axis=3, name=None)(X)
+    
+    # ReLU
+    X = K.layers.Activation('relu')(X)
+    
+    # 1x1 Convolution (no bias needed after BatchNorm)
     nb_filters = int(nb_filters * compression)
     X = K.layers.Conv2D(
         filters=nb_filters,
@@ -37,14 +34,9 @@ def transition_layer(X, nb_filters, compression):
         strides=1,
         padding='same',
         kernel_initializer=he_init,
-        use_bias=True
-    )(X)
+        use_bias=False)(X)
 
-    # Average pooling with stride 2
-    X = K.layers.AveragePooling2D(
-        pool_size=2,
-        strides=2,
-        padding='same'
-    )(X)
+    # 2x2 Average Pooling
+    X = K.layers.AveragePooling2D(pool_size=2, strides=2, padding='same')(X)
 
     return X, nb_filters
