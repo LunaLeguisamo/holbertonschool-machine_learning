@@ -14,20 +14,19 @@ def densenet121(growth_rate=32, compression=1.0):
     X_input = K.Input(shape=(224, 224, 3))
 
     # Initial Convolution (Name layers explicitly)
-    X = K.layers.BatchNormalization()(X_input)
+    X = K.layers.BatchNormalization(axis=3)(X_input)
     X = K.layers.Activation('relu')(X)
     X = K.layers.Conv2D(
         filters=64 * growth_rate,
         kernel_size=7,
         strides=2,
         padding='same',
-        kernel_initializer=he_init,
-        use_bias=True)(X)
+        kernel_initializer=he_init)(X)
     X = K.layers.MaxPooling2D(
         pool_size=3, strides=2, padding='same')(X)
 
     # Dense Block 1 (6 layers)
-    X, nb_filters = dense_block(X, 2 * growth_rate, growth_rate, 6)
+    X, nb_filters = dense_block(X, 64, growth_rate, growth_rate, 6)
 
     # Transition Layer 1
     X, nb_filters = transition_layer(X, nb_filters, compression)
