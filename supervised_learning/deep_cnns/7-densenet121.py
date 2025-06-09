@@ -49,9 +49,9 @@ def densenet121(growth_rate=32, compression=1.0):
     X = K.layers.AveragePooling2D(
         pool_size=7
         )(X)
-    X = K.layers.Dense(units=1000,
+    op = K.layers.Dense(units=1000,
                        activation='softmax',
                        kernel_initializer=he_init)(X)
 
-    model = K.Model(inputs=X_input, outputs=X)
+    model = K.Model(inputs=X_input, outputs=op)
     return model
