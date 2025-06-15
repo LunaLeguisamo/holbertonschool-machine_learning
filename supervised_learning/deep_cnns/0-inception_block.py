@@ -1,75 +1,101 @@
 #!/usr/bin/env python3
-"""
-This module contains the implementation of an Inception
-block as described in "Going Deeper with Convolutions."
-
-The Inception block allows you to extract features at
-different scales by combining 1x1, 3x3, 5x5 convolutions,
-and parallel pooling.
-"""
+import tensorflow as tf
 from tensorflow import keras as K
+import numpy as np
 
-
-def inception_block(A_prev, filters):
+def preprocess_data(X, Y):
     """
-    Builds an Inception block.
-
-    Parameters:
-    - A_prev: output of the previous block (input tensor)
-    - filters: tuple or list with 6 values:
-    F1 -> filters for the 1x1 convolution
-    F3R -> filters for the 1x1 convolution prior to 3x3
-    F3 -> filters for the 3x3 convolution
-    F5R -> filters for the 1x1 convolution prior to 5x5
-    F5 -> filters for the 5x5 convolution
-    FPP -> filters for the 1x1 convolution after max pooling
-
+    Preprocess CIFAR-10 data: resize images to 160x160, normalize MobileNetV2 way,
+    and one-hot encode labels.
+    Inputs:
+        X: numpy.ndarray (m, 32, 32, 3)
+        Y: numpy.ndarray (m,)
     Returns:
-    - Tensor resulting from concatenating the outputs of all branches.
+        X_p: numpy.ndarray (m, 160, 160, 3)
+        Y_p: numpy.ndarray (m, 10)
     """
-    F1, F3R, F3, F5R, F5, FPP = filters
+    X_resized = np.array([tf.image.resize(img, (160, 160)).numpy() for img in X])
+    X_p = K.applications.mobilenet_v2.preprocess_input(X_resized)
+    Y_p = K.utils.to_categorical(Y, 10)
+    return X_p, Y_p
 
-    # Rama 1: Convolución 1x1
-    conv_1x1 = K.layers.Conv2D(
-        filters=F1, kernel_size=(1, 1),
-        padding='same', activation='relu'
-    )(A_prev)
+def build_base_model():
+    """
+    Loads MobileNetV2 without top layers, input shape 160x160x3, weights imagenet.
+    Freezes all layers.
+    """
+    base_model = K.applications.MobileNetV2(
+        input_shape=(160, 160, 3),
+        include_top=False,
+        weights='imagenet'
+    )
+    base_model.trainable = False
+    return base_model
 
-    # Rama 2: 1x1 seguido de 3x3
-    conv_3x3_reduce = K.layers.Conv2D(
-        filters=F3R, kernel_size=(1, 1),
-        padding='same', activation='relu'
-    )(A_prev)
+def build_head_model(input_shape):
+    """
+    Build the top classifier layers on bottleneck features.
+    """
+    inputs = K.Input(shape=input_shape)
+    x = K.layers.GlobalAveragePooling2D()(inputs)
+    x = K.layers.Dense(256, activation='relu')(x)
+    x = K.layers.Dropout(0.3)(x)
+    outputs = K.layers.Dense(10, activation='softmax')(x)
+    model = K.Model(inputs, outputs)
+    model.compile(
+        optimizer='adam',
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    return model
 
-    conv_3x3 = K.layers.Conv2D(
-        filters=F3, kernel_size=(3, 3),
-        padding='same', activation='relu'
-    )(conv_3x3_reduce)
+def train_model():
+    # Load CIFAR-10 data
+    (X_train, Y_train), (X_val, Y_val) = K.datasets.cifar10.load_data()
+    Y_train = Y_train.flatten()
+    Y_val = Y_val.flatten()
 
-    # Rama 3: 1x1 seguido de 5x5
-    conv_5x5_reduce = K.layers.Conv2D(
-        filters=F5R, kernel_size=(1, 1),
-        padding='same', activation='relu'
-    )(A_prev)
+    # Preprocess data
+    X_train_p, Y_train_p = preprocess_data(X_train, Y_train)
+    X_val_p, Y_val_p = preprocess_data(X_val, Y_val)
 
-    conv_5x5 = K.layers.Conv2D(
-        filters=F5, kernel_size=(5, 5),
-        padding='same', activation='relu'
-    )(conv_5x5_reduce)
+    # Build and freeze base model
+    base_model = build_base_model()
 
-    # Rama 4: Max Pooling seguido de 1x1
-    max_pool = K.layers.MaxPooling2D(
-        pool_size=(3, 3), strides=(1, 1),
-        padding='same'
-    )(A_prev)
+    # Precompute bottleneck features
+    print("Calculating bottleneck features for training data...")
+    bottleneck_train = base_model.predict(X_train_p, batch_size=64, verbose=1)
+    print("Calculating bottleneck features for validation data...")
+    bottleneck_val = base_model.predict(X_val_p, batch_size=64, verbose=1)
 
-    conv_pool_proj = K.layers.Conv2D(
-        filters=FPP, kernel_size=(1, 1),
-        padding='same', activation='relu'
-    )(max_pool)
+    # Build and compile head model
+    head_model = build_head_model(bottleneck_train.shape[1:])
 
-    # Concatenamos las 4 ramas en la dimensión de canales (axis=-1)
-    output = K.layers.concatenate(
-        [conv_1x1, conv_3x3, conv_5x5, conv_pool_proj], axis=-1)
+    # Train only the head
+    head_model.fit(
+        bottleneck_train, Y_train_p,
+        batch_size=64,
+        epochs=30,
+        validation_data=(bottleneck_val, Y_val_p),
+        verbose=2
+    )
 
-    return output
+    # Save the entire model (head + base)
+    # To do this, create a combined model that includes the base and head
+    inputs = K.Input(shape=(160,160,3))
+    x = base_model(inputs, training=False)  # base frozen
+    outputs = head_model(x)
+    full_model = K.Model(inputs, outputs)
+
+    # Compile full model
+    full_model.compile(
+        optimizer='adam',
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
+
+    full_model.save('cifar10.h5')
+    print("Model saved as cifar10.h5")
+
+if __name__ == '__main__':
+    train_model()
