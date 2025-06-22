@@ -21,18 +21,18 @@ class Yolo:
         self.class_t = class_t
         self.nms_t = nms_t
         self.anchors = anchors
-        
+
     def process_outputs(self, outputs, image_size):
         """
         Procesa las salidas del modelo YOLO para obtener:
         - bounding boxes ajustadas al tamaño de la imagen,
         - confianzas de objeto por celda,
         - probabilidades por clase.
-        
+
         Parámetros:
         - outputs: lista de arrays de salida del modelo YOLO.
         - image_size: tupla (altura, ancho) de la imagen original.
-        
+
         Devuelve:
         - boxes: lista de arrays con las cajas transformadas por escala.
         - box_confidences: lista de arrays con las confianzas.
@@ -66,8 +66,8 @@ class Yolo:
             grid_y = grid_y[:, :, np.newaxis]  # (grid_h, grid_w, 1)
 
             # Obtenemos los anchors correspondientes a esta escala
-            anchor_w = self.anchors[i, :, 0].reshape((1, 1, anchor_boxes))  # (1, 1, 3)
-            anchor_h = self.anchors[i, :, 1].reshape((1, 1, anchor_boxes))  # (1, 1, 3)
+            anchor_w = self.anchors[i, :, 0].reshape((1, 1, anchor_boxes))
+            anchor_h = self.anchors[i, :, 1].reshape((1, 1, anchor_boxes))
 
             # Input size del modelo
             input_shape = self.model.input.shape.as_list()
@@ -93,11 +93,11 @@ class Yolo:
 
             # Calculamos la confianza de objeto con sigmoid
             confidence = 1 / (1 + np.exp(-output[:, :, :, 4]))
-            box_confidences.append(confidence.reshape((grid_h, grid_w, anchor_boxes, 1)))
+            box_confidences.append(
+                confidence.reshape((grid_h, grid_w, anchor_boxes, 1)))
 
             # Calculamos la probabilidad por clase también con sigmoid
             class_probs = 1 / (1 + np.exp(-output[:, :, :, 5:]))
             box_class_probs.append(class_probs)
 
         return boxes, box_confidences, box_class_probs
- esta re largo dice el disc xd, lo commiteo, tenes mi git?
