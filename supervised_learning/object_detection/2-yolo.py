@@ -144,10 +144,10 @@ class Yolo:
             # 3. Filtro por score mínimo
             mask = scores >= self.class_t
 
-        # 4. Aplicamos la máscara (flatten y filtramos)
-        filtered_boxes.append(boxes[i][mask])
-        box_classes.append(classes[mask])
-        box_scores.append(scores[mask])
+            # 4. Aplicamos la máscara (flatten y filtramos)
+            filtered_boxes.append(boxes[i][mask])
+            box_classes.append(classes[mask])
+            box_scores.append(scores[mask])
 
         # 5. Concatenamos los resultados de todas las escalas
         filtered_boxes = np.concatenate(filtered_boxes, axis=0)
