@@ -2,7 +2,7 @@
 
 if __name__ == '__main__':
     import numpy as np
-    Yolo = __import__('1-yolo').Yolo
+    Yolo = __import__('2-yolo').Yolo
 
     np.random.seed(0)
     anchors = np.array([[[116, 90], [156, 198], [373, 326]],
@@ -13,6 +13,7 @@ if __name__ == '__main__':
     output2 = np.random.randn(26, 26, 3, 85)
     output3 = np.random.randn(52, 52, 3, 85)
     boxes, box_confidences, box_class_probs = yolo.process_outputs([output1, output2, output3], np.array([500, 700]))
+    boxes, box_classes, box_scores = yolo.filter_boxes(boxes, box_confidences, box_class_probs)
     print('Boxes:', boxes)
-    print('Box confidences:', box_confidences)
-    print('Box class probabilities:', box_class_probs)
+    print('Box classes:', box_classes)
+    print('Box scores:', box_scores)
