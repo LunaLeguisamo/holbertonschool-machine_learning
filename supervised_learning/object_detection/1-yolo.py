@@ -1,20 +1,46 @@
 #!/usr/bin/env python3
 """
-Class Yolo that uses the Yolo v3 algorithm to perform object detection
+0-yolo.py
 """
-
-from tensorflow import keras as K
+import tensorflow as tf
 import numpy as np
 
 
 class Yolo:
-    """YOLO v3 object detection model"""
+    """
+    Yolo class uses the YOLO v3 algorithm to perform object detection.
 
+    Attributes:
+        model (keras.Model): The Darknet Keras model loaded from model_path.
+        class_names (list): List of class names for the model.
+        class_t (float): Box score threshold for the initial filtering step.
+        nms_t (float): Intersection over Union (IoU) threshold for non-max
+            suppression.
+        anchors (np.ndarray): Anchor boxes used by the model.
+            Shape is (outputs, anchor_boxes, 2), where:
+            - outputs: number of output layers of the Darknet model
+            - anchor_boxes: number of anchor boxes per output
+            - 2: width and height of each anchor box.
+    """
     def __init__(self, model_path, classes_path, class_t, nms_t, anchors):
-        """Initialize YOLO with config and model"""
-        self.model = K.models.load_model(model_path)
+        """
+        Initializes the Yolo object detector.
 
-        # Cargar nombres de las clases
+        Parameters:
+        - model_path (str): path to the Darknet Keras model.
+        - classes_path (str): path to the file containing class
+            names used by the model.
+        - class_t (float): box score threshold for the initial filtering step.
+        - nms_t (float): IOU threshold for non-max suppression.
+        - anchors (np.ndarray): array of shape (outputs, anchor_boxes, 2)
+            with anchor box dimensions.
+            outputs: number of output predictions made by the model
+            anchor_boxes: number of anchor boxes per prediction
+            2: [anchor_box_width, anchor_box_height]
+        """
+
+        self.model = tf.keras.models.load_model(model_path)
+
         with open(classes_path, 'r') as f:
             self.class_names = [line.strip() for line in f.readlines()]
 
@@ -22,82 +48,68 @@ class Yolo:
         self.nms_t = nms_t
         self.anchors = anchors
 
+    def sigmoid(self, x):
+        """Apply the sigmoid function"""
+        return 1 / (1 + np.exp(-x))
+
     def process_outputs(self, outputs, image_size):
         """
-        Procesa las salidas del modelo YOLO para obtener:
-        - bounding boxes ajustadas al tamaño de la imagen,
-        - confianzas de objeto por celda,
-        - probabilidades por clase.
+        Processes the outputs of the YOLO model.
 
-        Parámetros:
-        - outputs: lista de arrays de salida del modelo YOLO.
-        - image_size: tupla (altura, ancho) de la imagen original.
+        Parameters:
+        - outputs: list of arrays (one for each scale of the model)
+        - image_size: actual image size [height, width]
 
-        Devuelve:
-        - boxes: lista de arrays con las cajas transformadas por escala.
-        - box_confidences: lista de arrays con las confianzas.
-        - box_class_probs: lista de arrays con las probabilidades por clase.
+        Returns:
+        - boxes: coordinates (x1, y1, x2, y2) rescaled to the original image
+        - box_confidences: object confidence for each box
+        - box_class_probs: class probabilities for each box
         """
+        image_h, image_w = image_size
         boxes = []
         box_confidences = []
         box_class_probs = []
 
-        image_h, image_w = image_size
-
         for i, output in enumerate(outputs):
-            grid_h, grid_w, anchor_boxes, _ = output.shape
+            grid_h, grid_w, anchor_boxes = output.shape[:3]
 
-            # Preparamos el array donde se guardarán las bounding boxes
-            box = np.zeros_like(output[:, :, :, :4])
+            # Separamos los datos del output
+            t_xy = self.sigmoid(output[..., 0:2])      # tx, ty
+            t_wh = output[..., 2:4]                    # tw, th
+            # confianza de que hay un objeto
+            objectness = self.sigmoid(output[..., 4:5])
+            # probabilidades por clase
+            class_probs = self.sigmoid(output[..., 5:])
 
-            # Extraemos las predicciones crudas del modelo
-            tx = output[:, :, :, 0]
-            ty = output[:, :, :, 1]
-            tw = output[:, :, :, 2]
-            th = output[:, :, :, 3]
-
-            # Creamos las grillas de coordenadas (meshgrid)
+            # Creamos coordenadas (cx, cy) de la grilla
             grid_x = np.arange(grid_w)
             grid_y = np.arange(grid_h)
-            grid_x, grid_y = np.meshgrid(grid_x, grid_y)
+            cx, cy = np.meshgrid(grid_x, grid_y)
+            cx = cx[..., np.newaxis]
+            cy = cy[..., np.newaxis]
 
-            # Les damos forma para que puedan sumarse a tx y ty
-            grid_x = grid_x[:, :, np.newaxis]  # (grid_h, grid_w, 1)
-            grid_y = grid_y[:, :, np.newaxis]  # (grid_h, grid_w, 1)
+            # Sumamos la posición de la celda para calcular bx, by
+            bx = (t_xy[..., 0] + cx) / grid_w
+            by = (t_xy[..., 1] + cy) / grid_h
 
-            # Obtenemos los anchors correspondientes a esta escala
-            anchor_w = self.anchors[i, :, 0].reshape((1, 1, anchor_boxes))
-            anchor_h = self.anchors[i, :, 1].reshape((1, 1, anchor_boxes))
+            # Ancho y alto usando anchor boxes
+            anchor_w = self.anchors[i, :, 0]
+            anchor_h = self.anchors[i, :, 1]
+            bw = (np.exp(t_wh[..., 0]) * anchor_w) / self.model.input.shape[1]
+            bh = (np.exp(t_wh[..., 1]) * anchor_h) / self.model.input.shape[2]
 
-            # Input size del modelo
-            input_shape = self.model.input.shape.as_list()
-            input_h = input_shape[1]
-            input_w = input_shape[2]
+            # Convertimos a (x1, y1, x2, y2)
+            x1 = (bx - bw / 2) * image_w
+            y1 = (by - bh / 2) * image_h
+            x2 = (bx + bw / 2) * image_w
+            y2 = (by + bh / 2) * image_h
 
-            # Calculamos las coordenadas normalizadas de los centros
-            bx = (1 / (1 + np.exp(-tx)) + grid_x) / grid_w
-            by = (1 / (1 + np.exp(-ty)) + grid_y) / grid_h
+            # Apilamos las coordenadas en el último eje
+            box = np.stack([x1, y1, x2, y2], axis=-1)
 
-            # Calculamos el ancho y alto normalizados de las cajas
-            bw = (np.exp(tw) * anchor_w) / grid_w
-            bh = (np.exp(th) * anchor_h) / grid_h
-
-            # Convertimos de centro-ancho-alto a (x1, y1, x2, y2)
-            box[:, :, :, 0] = (bx - bw / 2) * image_w  # x1
-            box[:, :, :, 1] = (by - bh / 2) * image_h  # y1
-            box[:, :, :, 2] = (bx + bw / 2) * image_w  # x2
-            box[:, :, :, 3] = (by + bh / 2) * image_h  # y2
-
-            # Agregamos la caja a la lista
+            # Guardamos los resultados
             boxes.append(box)
-
-            # Calculamos la confianza de objeto con sigmoid
-            confidence = 1 / (1 + np.exp(-output[:, :, :, 4]))
-            box_confidences.append(
-                confidence.reshape((grid_h, grid_w, anchor_boxes, 1)))
-
-            # Calculamos la probabilidad por clase también con sigmoid
-            class_probs = 1 / (1 + np.exp(-output[:, :, :, 5:]))
+            box_confidences.append(objectness)
             box_class_probs.append(class_probs)
 
         return boxes, box_confidences, box_class_probs
