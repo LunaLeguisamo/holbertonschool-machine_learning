@@ -79,8 +79,8 @@ class Yolo:
             by = (1 / (1 + np.exp(-ty)) + grid_y) / grid_h
 
             # Calculamos el ancho y alto normalizados de las cajas
-            bw = (np.exp(tw) * anchor_w) / input_w
-            bh = (np.exp(th) * anchor_h) / input_h
+            bw = (np.exp(tw) * anchor_w) / grid_w
+            bh = (np.exp(th) * anchor_h) / grid_h
 
             # Convertimos de centro-ancho-alto a (x1, y1, x2, y2)
             box[:, :, :, 0] = (bx - bw / 2) * image_w  # x1
