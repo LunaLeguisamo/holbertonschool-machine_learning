@@ -254,7 +254,7 @@ class Yolo:
         # Number of images
         ni = len(images)
         # Get model input dimensions (height, width)
-        input_h, input_w = self.model.input_shape()[1:3]
+        input_h, input_w = self.model.input.shape.as_list()[1:3]
 
         # Prepare arrays
         pimages = np.zeros((ni, input_h, input_w, 3), dtype=np.float32)
@@ -273,3 +273,76 @@ class Yolo:
             pimages[i] = resized / 255
 
         return pimages, image_shapes
+
+    def show_boxes(self, image, boxes, box_classes, box_scores, file_name):
+        """
+        Display image with bounding boxes, labels, and scores.
+
+        Parameters:
+        - image (np.ndarray): original image
+        - boxes (np.ndarray): array of boxes (N,4)
+        - box_classes (np.ndarray): class indices for each box
+        - box_scores (np.ndarray): scores for each box
+        - file_name (str): window name and save name
+        """
+        # Copy image to draw on
+        img = image.copy()
+        for box, cls, score in zip(boxes, box_classes, box_scores):
+            x1, y1, x2, y2 = box.astype(int)
+            # Draw rectangle in blue, thickness 2
+            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            # Prepare text: class name and score
+            label = f"{self.class_names[cls]} {score:.2f}"
+            # Position text 5 pixels above box
+            text_x, text_y = x1, max(0, y1 - 5)
+            cv2.putText(
+                img, label, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (0, 0, 255), 1, cv2.LINE_AA
+            )
+        # Show the image in window
+        cv2.imshow(file_name, img)
+        key = cv2.waitKey(0) & 0xFF
+        # If 's' key is pressed, save image to detections dir
+        if key == ord('s'):
+            os.makedirs('detections', exist_ok=True)
+            save_path = os.path.join('detections', file_name)
+            cv2.imwrite(save_path, img)
+        cv2.destroyAllWindows()
+
+    def predict(self, folder_path):
+        """
+        Predict objects in all images within a folder and display results.
+
+        Parameters:
+        - folder_path (str): path to directory with images
+
+        Returns:
+        - predictions (list of tuples): (boxes, box_classes, box_scores) for each image
+        - image_paths (list of str): full paths to the images
+        """
+        images, image_paths = self.load_images(folder_path)
+        pimages, image_shapes = self.preprocess_images(images)
+        outputs = self.model.predict(pimages)
+
+        # Salidas separadas por imagen
+        predictions = []
+        for i in range(len(images)):
+            image_shape = image_shapes[i]
+            # Obtener salidas individuales por escala
+            output_per_image = [output[i][np.newaxis, ...] for output in outputs]
+            
+            boxes, box_confidences, box_class_probs = self.process_outputs(
+                output_per_image, image_shape
+            )
+            filtered_boxes, box_classes, box_scores = self.filter_boxes(
+                boxes, box_confidences, box_class_probs
+            )
+            box_predictions, predicted_classes, predicted_scores = self.non_max_suppression(
+                filtered_boxes, box_classes, box_scores
+            )
+
+            file_name = os.path.basename(image_paths[i])
+            self.show_boxes(images[i], box_predictions, predicted_classes, predicted_scores, file_name)
+            predictions.append((box_predictions, predicted_classes, predicted_scores))
+
+        return predictions, image_paths
