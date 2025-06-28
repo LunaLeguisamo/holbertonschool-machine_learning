@@ -254,7 +254,7 @@ class Yolo:
         # Number of images
         ni = len(images)
         # Get model input dimensions (height, width)
-        input_h, input_w = self.model.input_shape()[1:3]
+        input_h, input_w = self.model.input.shape.as_list()[1:3]
 
         # Prepare arrays
         pimages = np.zeros((ni, input_h, input_w, 3), dtype=np.float32)
