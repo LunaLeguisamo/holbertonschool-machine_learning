@@ -267,7 +267,7 @@ class Yolo:
 
             # Resize image to model input size
             resized = cv2.resize(
-                img, (input_w, input_h), interpolation=cv2.INTER_CUBIC)
+                img, (input_w, input_h), interpolation=cv2.INTER_AREA)
 
             # Normalize pixel values to [0,1]
             pimages[i] = resized / 255
