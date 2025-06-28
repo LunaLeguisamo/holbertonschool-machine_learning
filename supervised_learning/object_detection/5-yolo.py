@@ -264,7 +264,7 @@ class Yolo:
             # Record original shape
             h, w, _ = img.shape
             image_shapes[i] = (h, w)
-
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             # Resize image to model input size
             resized = cv2.resize(
                 img, (input_w, input_h), interpolation=cv2.INTER_AREA)
