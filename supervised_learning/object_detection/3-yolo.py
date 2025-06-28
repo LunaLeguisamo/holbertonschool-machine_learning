@@ -13,7 +13,7 @@ class Yolo:
         # Carga el modelo Darknet y las clases
         self.model = tf.keras.models.load_model(model_path)
         with open(classes_path, 'r') as f:
-            self.class_names = [l.strip() for l in f]
+            self.class_names = [i.strip() for i in f]
         self.class_t = class_t
         self.nms_t = nms_t
         self.anchors = anchors
@@ -83,8 +83,8 @@ class Yolo:
 
         # concatena todas las escalas
         filtered_boxes = np.concatenate(filtered_boxes, axis=0)
-        box_classes    = np.concatenate(box_classes,    axis=0)
-        box_scores     = np.concatenate(box_scores,     axis=0)
+        box_classes = np.concatenate(box_classes,    axis=0)
+        box_scores = np.concatenate(box_scores,     axis=0)
 
         return filtered_boxes, box_classes, box_scores
 
@@ -97,12 +97,12 @@ class Yolo:
         for cls in np.unique(box_classes):
             # extraer solo las cajas de esa clase
             idxs = np.where(box_classes == cls)
-            cls_boxes  = filtered_boxes[idxs]
+            cls_boxes = filtered_boxes[idxs]
             cls_scores = box_scores[idxs]
 
             # ordenar por score descendente
             order = np.argsort(cls_scores)[::-1]
-            cls_boxes  = cls_boxes[order]
+            cls_boxes = cls_boxes[order]
             cls_scores = cls_scores[order]
 
             keep = []
@@ -116,7 +116,7 @@ class Yolo:
                     break
 
                 # resto de cajas a comparar
-                rest_boxes  = cls_boxes[1:]
+                rest_boxes = cls_boxes[1:]
                 rest_scores = cls_scores[1:]
 
                 # calcular intersección
@@ -130,7 +130,8 @@ class Yolo:
                 inter_area = inter_w * inter_h
 
                 # áreas individuales
-                best_area = (best_box[2] - best_box[0]) * (best_box[3] - best_box[1])
+                best_area = (
+                    best_box[2] - best_box[0]) * (best_box[3] - best_box[1])
                 rest_areas = (rest_boxes[:, 2] - rest_boxes[:, 0]) * \
                              (rest_boxes[:, 3] - rest_boxes[:, 1])
 
@@ -140,7 +141,7 @@ class Yolo:
 
                 # quedarnos solo con IoU < umbral
                 mask = iou < self.nms_t
-                cls_boxes  = rest_boxes[mask]
+                cls_boxes = rest_boxes[mask]
                 cls_scores = rest_scores[mask]
 
             # acumular resultados finales
