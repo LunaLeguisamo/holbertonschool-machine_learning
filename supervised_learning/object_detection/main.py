@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 
 if __name__ == '__main__':
-    import cv2
     import numpy as np
-    Yolo = __import__('5-yolo').Yolo
+    Yolo = __import__('6-yolo').Yolo
 
-    np.random.seed(2)
+    np.random.seed(0)
     anchors = np.array([[[116, 90], [156, 198], [373, 326]],
                         [[30, 61], [62, 45], [59, 119]],
                         [[10, 13], [16, 30], [33, 23]]])
     yolo = Yolo('yolo.h5', 'coco_classes.txt', 0.6, 0.5, anchors)
     images, image_paths = yolo.load_images('yolo_images/yolo/')
-    image_paths, images = zip(*sorted(zip(image_paths, images)))
-    pimages, image_shapes = yolo.preprocess_images(images)
-    print(type(pimages), pimages.shape)
-    print(type(image_shapes), image_shapes.shape)
-    i = np.random.randint(0, len(images))
-    print(images[i].shape, ':', image_shapes[i])
-    cv2.imshow(image_paths[i], pimages[i])
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    boxes = np.array([[119.22100287, 118.62197718, 567.75985556, 440.44121152],
+                      [468.53530752, 84.48338278, 696.04923556, 167.98947829],
+                      [124.2043716, 220.43365057, 319.4254314 , 542.13706101]])
+    box_scores = np.array([0.99537075, 0.91536146, 0.9988506])
+    box_classes = np.array([1, 7, 16])
+    ind = 0
+    for i, name in enumerate(image_paths):
+        if "dog.jpg" in name:
+            ind = i
+            break
+    yolo.show_boxes(images[i], boxes, box_classes, box_scores, "dog.jpg")

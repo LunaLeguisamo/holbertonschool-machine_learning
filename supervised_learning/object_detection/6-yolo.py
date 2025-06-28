@@ -273,3 +273,38 @@ class Yolo:
             pimages[i] = resized / 255
 
         return pimages, image_shapes
+
+    def show_boxes(self, image, boxes, box_classes, box_scores, file_name):
+        """
+        Display image with bounding boxes, labels, and scores.
+
+        Parameters:
+        - image (np.ndarray): original image
+        - boxes (np.ndarray): array of boxes (N,4)
+        - box_classes (np.ndarray): class indices for each box
+        - box_scores (np.ndarray): scores for each box
+        - file_name (str): window name and save name
+        """
+        # Copy image to draw on
+        img = image.copy()
+        for box, cls, score in zip(boxes, box_classes, box_scores):
+            x1, y1, x2, y2 = box.astype(int)
+            # Draw rectangle in blue, thickness 2
+            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            # Prepare text: class name and score
+            label = f"{self.class_names[cls]} {score:.2f}"
+            # Position text 5 pixels above box
+            text_x, text_y = x1, max(0, y1 - 5)
+            cv2.putText(
+                img, label, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,
+                0.5, (0, 0, 255), 1, cv2.LINE_AA
+            )
+        # Show the image in window
+        cv2.imshow(file_name, img)
+        key = cv2.waitKey(0) & 0xFF
+        # If 's' key is pressed, save image to detections dir
+        if key == ord('s'):
+            os.makedirs('detections', exist_ok=True)
+            save_path = os.path.join('detections', file_name)
+            cv2.imwrite(save_path, img)
+        cv2.destroyAllWindows()
