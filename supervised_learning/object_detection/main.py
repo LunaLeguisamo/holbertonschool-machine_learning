@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 
 if __name__ == '__main__':
+    import cv2
     import numpy as np
-    Yolo = __import__('3-yolo').Yolo
+    Yolo = __import__('4-yolo').Yolo
 
-    np.random.seed(0)
+    np.random.seed(2)
     anchors = np.array([[[116, 90], [156, 198], [373, 326]],
                         [[30, 61], [62, 45], [59, 119]],
                         [[10, 13], [16, 30], [33, 23]]])
     yolo = Yolo('yolo.h5', 'coco_classes.txt', 0.6, 0.5, anchors)
-    output1 = np.random.randn(13, 13, 3, 85)
-    output2 = np.random.randn(26, 26, 3, 85)
-    output3 = np.random.randn(52, 52, 3, 85)
-    boxes, box_confidences, box_class_probs = yolo.process_outputs([output1, output2, output3], np.array([500, 700]))
-    boxes, box_classes, box_scores = yolo.filter_boxes(boxes, box_confidences, box_class_probs)
-    boxes, box_classes, box_scores = yolo.non_max_suppression(boxes, box_classes, box_scores)
-    print('Boxes:', boxes)
-    print('Box classes:', box_classes)
-    print('Box scores:', box_scores)
+    images, image_paths = yolo.load_images('yolo_images/yolo/')
+    image_paths, images = zip(*sorted(zip(image_paths, images)))
+    i = np.random.randint(0, len(images))
+    print(i)
+    print(image_paths[i])
+    cv2.imshow(image_paths[i], images[i])
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
