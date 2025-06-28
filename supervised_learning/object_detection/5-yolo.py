@@ -251,25 +251,25 @@ class Yolo:
         - pimages (np.ndarray): preprocessed images of shape (ni, h, w, 3)
         - image_shapes (np.ndarray): original image shapes (ni, 2)
         """
-        # Number of images
-        ni = len(images)
-        # Get model input dimensions (height, width)
-        input_h, input_w = self.model.input.shape.as_list()[1:3]
+        input_h = self.model.input.shape[1]
+        input_w = self.model.input.shape[2]
 
-        # Prepare arrays
-        pimages = np.zeros((ni, input_h, input_w, 3), dtype=np.float32)
-        image_shapes = np.zeros((ni, 2), dtype=np.int32)
+        pimages = []
+        image_shapes = []
 
-        for i, img in enumerate(images):
-            # Record original shape
-            h, w, _ = img.shape
-            image_shapes[i] = (h, w)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            # Resize image to model input size
-            resized = cv2.resize(
-                img, (input_w, input_h), interpolation=cv2.INTER_AREA)
+        for img in images:
+            h, w = img.shape[:2]
 
-            # Normalize pixel values to [0,1]
-            pimages[i] = resized / 255
+            image_shapes.append(np.array([h, w]))
+
+            resized = cv2.resize(img, (input_h, input_w),
+                                 interpolation=cv2.INTER_CUBIC)
+
+            scaled = resized / 255
+
+            pimages.append(scaled)
+
+        pimages = np.array(pimages)
+        image_shapes = np.array(image_shapes)
 
         return pimages, image_shapes
