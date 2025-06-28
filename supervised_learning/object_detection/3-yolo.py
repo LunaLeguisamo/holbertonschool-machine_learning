@@ -1,172 +1,156 @@
 #!/usr/bin/env python3
 """
-0-yolo.py
+3-yolo.py
 """
 import tensorflow as tf
 import numpy as np
 
 
 class Yolo:
-    """
-    Yolo class uses the YOLO v3 algorithm to perform object detection.
+    """YOLO v3 object detection"""
 
-    Attributes:
-        model (keras.Model): The Darknet Keras model loaded from model_path.
-        class_names (list): List of class names for the model.
-        class_t (float): Box score threshold for the initial filtering step.
-        nms_t (float): Intersection over Union (IoU) threshold for non-max
-            suppression.
-        anchors (np.ndarray): Anchor boxes used by the model.
-            Shape is (outputs, anchor_boxes, 2), where:
-            - outputs: number of output layers of the Darknet model
-            - anchor_boxes: number of anchor boxes per output
-            - 2: width and height of each anchor box.
-    """
     def __init__(self, model_path, classes_path, class_t, nms_t, anchors):
-        """
-        Initializes the Yolo object detector.
-
-        Parameters:
-        - model_path (str): path to the Darknet Keras model.
-        - classes_path (str): path to the file containing class
-            names used by the model.
-        - class_t (float): box score threshold for the initial filtering step.
-        - nms_t (float): IOU threshold for non-max suppression.
-        - anchors (np.ndarray): array of shape (outputs, anchor_boxes, 2)
-            with anchor box dimensions.
-            outputs: number of output predictions made by the model
-            anchor_boxes: number of anchor boxes per prediction
-            2: [anchor_box_width, anchor_box_height]
-        """
-
+        # Carga el modelo Darknet y las clases
         self.model = tf.keras.models.load_model(model_path)
-
         with open(classes_path, 'r') as f:
-            self.class_names = [line.strip() for line in f.readlines()]
-
+            self.class_names = [l.strip() for l in f]
         self.class_t = class_t
         self.nms_t = nms_t
         self.anchors = anchors
 
     def sigmoid(self, x):
-        """Apply the sigmoid function"""
         return 1 / (1 + np.exp(-x))
 
     def process_outputs(self, outputs, image_size):
-        """
-        Processes the outputs of the YOLO model.
-
-        Parameters:
-        - outputs: list of arrays (one for each scale of the model)
-        - image_size: actual image size [height, width]
-
-        Returns:
-        - boxes: coordinates (x1, y1, x2, y2) rescaled to the original image
-        - box_confidences: object confidence for each box
-        - box_class_probs: class probabilities for each box
-        """
         image_h, image_w = image_size
-        boxes = []
-        box_confidences = []
-        box_class_probs = []
+        boxes, box_confs, box_cls_probs = [], [], []
 
         for i, output in enumerate(outputs):
-            grid_h, grid_w, anchor_boxes = output.shape[:3]
+            gh, gw, ab, _ = output.shape
 
-            # Separamos los datos del output
-            t_xy = self.sigmoid(output[..., 0:2])      # tx, ty
-            t_wh = output[..., 2:4]                    # tw, th
-            # confianza de que hay un objeto
-            objectness = self.sigmoid(output[..., 4:5])
-            # probabilidades por clase
-            class_probs = self.sigmoid(output[..., 5:])
+            # 1) extraer t_xy, t_wh, conf, class_probs
+            t_xy = self.sigmoid(output[..., 0:2])
+            t_wh = output[..., 2:4]
+            conf = self.sigmoid(output[..., 4:5])
+            cls = self.sigmoid(output[..., 5:])
 
-            # Creamos coordenadas (cx, cy) de la grilla
-            grid_x = np.arange(grid_w)
-            grid_y = np.arange(grid_h)
-            cx, cy = np.meshgrid(grid_x, grid_y)
+            # 2) grid
+            gx = np.arange(gw)
+            gy = np.arange(gh)
+            cx, cy = np.meshgrid(gx, gy)
             cx = cx[..., np.newaxis]
             cy = cy[..., np.newaxis]
 
-            # Sumamos la posición de la celda para calcular bx, by
-            bx = (t_xy[..., 0] + cx) / grid_w
-            by = (t_xy[..., 1] + cy) / grid_h
+            # 3) bx, by
+            bx = (t_xy[..., 0] + cx) / gw
+            by = (t_xy[..., 1] + cy) / gh
 
-            # Ancho y alto usando anchor boxes
-            anchor_w = self.anchors[i, :, 0]
-            anchor_h = self.anchors[i, :, 1]
-            bw = (np.exp(t_wh[..., 0]) * anchor_w) / self.model.input.shape[1]
-            bh = (np.exp(t_wh[..., 1]) * anchor_h) / self.model.input.shape[2]
+            # 4) bw, bh (relativo a la imagen)
+            anchor_w = self.anchors[i, :, 0].reshape((1, 1, ab))
+            anchor_h = self.anchors[i, :, 1].reshape((1, 1, ab))
+            input_h, input_w = self.model.input.shape.as_list()[1:3]
+            bw = (np.exp(t_wh[..., 0]) * anchor_w) / input_w
+            bh = (np.exp(t_wh[..., 1]) * anchor_h) / input_h
 
-            # Convertimos a (x1, y1, x2, y2)
-            x1 = (bx - bw / 2) * image_w
-            y1 = (by - bh / 2) * image_h
-            x2 = (bx + bw / 2) * image_w
-            y2 = (by + bh / 2) * image_h
-
-            # Apilamos las coordenadas en el último eje
+            # 5) corner coordinates (x1,y1,x2,y2) en pixeles
+            x1 = (bx - bw/2) * image_w
+            y1 = (by - bh/2) * image_h
+            x2 = (bx + bw/2) * image_w
+            y2 = (by + bh/2) * image_h
             box = np.stack([x1, y1, x2, y2], axis=-1)
 
-            # Guardamos los resultados
             boxes.append(box)
-            box_confidences.append(objectness)
-            box_class_probs.append(class_probs)
+            box_confs.append(conf)
+            box_cls_probs.append(cls)
 
-        return boxes, box_confidences, box_class_probs
+        return boxes, box_confs, box_cls_probs
 
-    def filter_boxes(self, boxes, box_confidences, box_class_probs):
-        """
-        Filters the bounding boxes based on objectness score and class
-        probabilities.
+    def filter_boxes(self, boxes, box_confs, box_cls_probs):
+        filtered_boxes, box_classes, box_scores = [], [], []
 
-        Parameters:
-        - boxes: list of (grid_h, grid_w, anchor_boxes, 4)
-        - box_confidences: list of (grid_h, grid_w, anchor_boxes, 1)
-        - box_class_probs: list of (grid_h, grid_w, anchor_boxes, classes)
+        for b, c, p in zip(boxes, box_confs, box_cls_probs):
+            # score por clase
+            scores = c * p  # (gh, gw, ab, classes)
+            classes = np.argmax(scores, axis=-1)
+            class_scores = np.max(scores, axis=-1)
 
-        Returns:
-        - filtered_boxes: (?, 4)
-        - box_classes: (?,)
-        - box_scores: (?)
-        """
-        filtered_boxes = []
-        box_classes = []
-        box_scores = []
-
-        for i in range(len(boxes)):
-            # 1. Score por clase = confianzas * probabilidad por clase
-            box_score = box_confidences[i] * box_class_probs[i]
-
-            # 2. Clase con mayor score y el score asociado
-            classes = np.argmax(box_score, axis=-1)  # (h, w, anchors)
-            scores = np.max(box_score, axis=-1)      # (h, w, anchors)
-
-            # 3. Filtro por score mínimo
-            mask = scores >= self.class_t
-
-            # 4. Aplicamos la máscara (flatten y filtramos)
-            filtered_boxes.append(boxes[i][mask])
+            # aplica umbral
+            mask = class_scores >= self.class_t
+            # filtra
+            filtered_boxes.append(b[mask])
             box_classes.append(classes[mask])
-            box_scores.append(scores[mask])
+            box_scores.append(class_scores[mask])
 
-        # 5. Concatenamos los resultados de todas las escalas
+        # concatena todas las escalas
         filtered_boxes = np.concatenate(filtered_boxes, axis=0)
-        box_classes = np.concatenate(box_classes, axis=0)
-        box_scores = np.concatenate(box_scores, axis=0)
+        box_classes    = np.concatenate(box_classes,    axis=0)
+        box_scores     = np.concatenate(box_scores,     axis=0)
 
         return filtered_boxes, box_classes, box_scores
 
     def non_max_suppression(self, filtered_boxes, box_classes, box_scores):
-        """
-        """
         box_predictions = []
-        predicted_box_classes = []
-        predicted_box_scores = []
-        
-        index = np.argsort(box_scores)[::-1]
-        sorted_scores = box_scores[index]
-        sorted_boxes = filtered_boxes[index]
-        sorted_classes = box_classes[index]
+        predicted_classes = []
+        predicted_scores = []
 
-        max_score_box = box_scores[0]
-        
+        # trabajar por cada clase
+        for cls in np.unique(box_classes):
+            # extraer solo las cajas de esa clase
+            idxs = np.where(box_classes == cls)
+            cls_boxes  = filtered_boxes[idxs]
+            cls_scores = box_scores[idxs]
+
+            # ordenar por score descendente
+            order = np.argsort(cls_scores)[::-1]
+            cls_boxes  = cls_boxes[order]
+            cls_scores = cls_scores[order]
+
+            keep = []
+            while len(cls_boxes) > 0:
+                # cogemos la caja de mayor score
+                best_box = cls_boxes[0]
+                best_score = cls_scores[0]
+                keep.append((best_box, cls, best_score))
+
+                if len(cls_boxes) == 1:
+                    break
+
+                # resto de cajas a comparar
+                rest_boxes  = cls_boxes[1:]
+                rest_scores = cls_scores[1:]
+
+                # calcular intersección
+                x1 = np.maximum(best_box[0], rest_boxes[:, 0])
+                y1 = np.maximum(best_box[1], rest_boxes[:, 1])
+                x2 = np.minimum(best_box[2], rest_boxes[:, 2])
+                y2 = np.minimum(best_box[3], rest_boxes[:, 3])
+
+                inter_w = np.maximum(0, x2 - x1)
+                inter_h = np.maximum(0, y2 - y1)
+                inter_area = inter_w * inter_h
+
+                # áreas individuales
+                best_area = (best_box[2] - best_box[0]) * (best_box[3] - best_box[1])
+                rest_areas = (rest_boxes[:, 2] - rest_boxes[:, 0]) * \
+                             (rest_boxes[:, 3] - rest_boxes[:, 1])
+
+                # unión = suma - intersección
+                union_area = best_area + rest_areas - inter_area
+                iou = inter_area / union_area
+
+                # quedarnos solo con IoU < umbral
+                mask = iou < self.nms_t
+                cls_boxes  = rest_boxes[mask]
+                cls_scores = rest_scores[mask]
+
+            # acumular resultados finales
+            for box, c, score in keep:
+                box_predictions.append(box)
+                predicted_classes.append(c)
+                predicted_scores.append(score)
+
+        return (
+            np.array(box_predictions),
+            np.array(predicted_classes),
+            np.array(predicted_scores)
+        )
