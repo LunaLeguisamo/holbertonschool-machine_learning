@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
+"""
+Create a class Poission
+"""
 
 
 class Poisson:
+    """
+    A class represents a poisson distribution
+    """
     def __init__(self, data=None, lambtha=1.):
         if data is None:
             if lambtha <= 0:
