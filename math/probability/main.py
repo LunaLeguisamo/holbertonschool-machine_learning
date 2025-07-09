@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import numpy as np
-Poisson = __import__('poisson').Poisson
+Exponential = __import__('exponential').Exponential
 
 np.random.seed(0)
-data = np.random.poisson(5., 100).tolist()
-p1 = Poisson(data)
-print('F(9):', p1.cdf(9))
+data = np.random.exponential(0.5, 100).tolist()
+e1 = Exponential(data)
+print('Lambtha:', e1.lambtha)
 
-p2 = Poisson(lambtha=5)
-print('F(9):', p2.cdf(9))
+e2 = Exponential(lambtha=2)
+print('Lambtha:', e2.lambtha)
