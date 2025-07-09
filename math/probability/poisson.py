@@ -2,6 +2,7 @@
 """
 Create a class Poission
 """
+import math as math
 
 
 class Poisson:
@@ -20,3 +21,14 @@ class Poisson:
                 raise ValueError("data must contain multiple values")
             else:
                 self.lambtha = float(sum(data) / len(data))
+
+    def pmf(self, k):
+        """
+        Calculates the value of the PMF for
+        a given number of “successes”
+        """
+        e = 2.7182818285
+        self.k = int(k)
+        if k < 0:
+            return 0
+        return e ** -self.lambtha * self.lambtha ** k / math.factorial(k)
