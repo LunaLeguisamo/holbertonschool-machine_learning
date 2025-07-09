@@ -2,7 +2,6 @@
 """
 Create a class Poission
 """
-import math as math
 
 
 class Poisson:
