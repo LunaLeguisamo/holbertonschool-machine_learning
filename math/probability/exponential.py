@@ -38,3 +38,16 @@ class Exponential:
         else:
             pdf = lambtha * (e ** -(lambtha * x))
             return pdf
+
+    def cdf(self, x):
+        """
+        Compute the cumulative distribution function
+        """
+        e = 2.7182818285
+        x = float(x)
+        lambtha = self.lambtha
+        if x < 0:
+            return 0
+        else:
+            pdf = 1 - (e ** -(lambtha * x))
+            return pdf
