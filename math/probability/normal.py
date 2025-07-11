@@ -31,3 +31,16 @@ class Normal:
                 squared_diffs = [(x - self.mean) ** 2 for x in data]
                 variance = sum(squared_diffs) / len(data)
                 self.stddev = variance ** 0.5
+
+    def z_score(self, x):
+        """
+        z-score
+        """
+        return (x - self.mean) / self.stddev
+
+    def x_value(self, z):
+        """
+        return the value x that correspond to a z-score value
+        x_value
+        """
+        return z * self.stddev + self.mean
