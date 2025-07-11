@@ -5,11 +5,13 @@ A class normal that represents a normal distribution
 
 
 class Normal:
+    """
+    Normal represent a normal distribution
+    data is a list of the data to be used to
+    estimate the distribution
+    """
     def __init__(self, data=None, mean=0., stddev=1.):
         """
-        Normal represent a normal distribution
-        data is a list of the data to be used to
-        estimate the distribution
         mean is the mean of the distribution
         stddev is the standard deviation of the distribution
         """
