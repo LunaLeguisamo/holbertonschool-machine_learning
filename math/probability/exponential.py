@@ -5,6 +5,9 @@ Create a class Exponential
 
 
 class Exponential:
+    """
+    Class exponential
+    """
     def __init__(self, data=None, lambtha=1.):
         """
         Exponential represents an
