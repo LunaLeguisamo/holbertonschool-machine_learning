@@ -63,3 +63,17 @@ class Binomial:
         binom_coeff = n_fact / (k_fact * nk_fact)
         prob = binom_coeff * (self.p ** k) * ((1 - self.p) ** (self.n - k))
         return prob
+
+    def cdf(self, k):
+        """
+        Calculates the value of the CDF for a given number of successes
+        """
+        if k < 0:
+            return 0
+
+        k = int(k)
+        cumulative = 0
+        for i in range(0, k + 1):
+            cumulative += self.pmf(i)
+
+        return cumulative
