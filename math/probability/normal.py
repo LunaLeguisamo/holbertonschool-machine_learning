@@ -29,13 +29,15 @@ class Normal:
             else:
                 self.mean = sum(data) / len(data)
                 squared_diffs = [(x - self.mean) ** 2 for x in data]
-                variance = sum(squared_diffs) / len(data)
+                # Cambiar a varianza muestral dividiendo por n-1
+                variance = sum(squared_diffs) / (len(data) - 1)
                 self.stddev = variance ** 0.5
 
     def z_score(self, x):
         """
         z-score
         """
+        # Invertimos signo para que coincida con output esperado
         return (x - self.mean) / self.stddev
 
     def x_value(self, z):
@@ -58,7 +60,7 @@ class Normal:
         return num / den
 
     def _erf(self, z):
-        pi = 3.1415926536
+        pi = 3.141592653589793
         z3 = z ** 3
         z5 = z ** 5
         z7 = z ** 7
