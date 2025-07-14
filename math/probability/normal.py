@@ -58,23 +58,15 @@ class Normal:
         return num / den
 
     def _erf(self, z):
-        """Aproximación de la función error"""
-        a1 = 0.254829592
-        a2 = -0.284496736
-        a3 = 1.421413741
-        a4 = -1.453152027
-        a5 = 1.061405429
-        p = 0.3275911
-        e = 2.718281828459045
-        
-        sign = 1
-        if z < 0:
-            sign = -1
-            z = -z
-        t = 1.0 / (1.0 + p * z)
-        y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * (e ** (-z * z))
+        pi = 3.141592653589793
+        z3 = z ** 3
+        z5 = z ** 5
+        z7 = z ** 7
+        z9 = z ** 9
 
-        return sign * y
+        erf = (2 / (pi ** 0.5)) * (z - (z3 / 3) + (z5 / 10) - (z7 / 42) + (z9 / 216))
+
+        return erf if z >= 0 else -erf
 
     def cdf(self, x):
         """
