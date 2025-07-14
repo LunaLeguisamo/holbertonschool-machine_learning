@@ -49,8 +49,8 @@ class Normal:
         """
         the form of the curve
         """
-        pi = 3.141592653589793
-        e = 2.718281828459045
+        pi = 3.1415926536
+        e = 2.7182818285
         x = float(x)
 
         num = e ** (-0.5 * ((x - self.mean) / self.stddev) ** 2)
@@ -58,7 +58,7 @@ class Normal:
         return num / den
 
     def _erf(self, z):
-        pi = 3.141592653589793
+        pi = 3.1415926536
         z3 = z ** 3
         z5 = z ** 5
         z7 = z ** 7
