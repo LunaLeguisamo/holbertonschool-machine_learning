@@ -38,7 +38,7 @@ class Normal:
         z-score
         """
         # Invertimos signo para que coincida con output esperado
-        return (self.mean - x) / self.stddev
+        return (x - self.mean) / self.stddev
 
     def x_value(self, z):
         """
@@ -76,3 +76,14 @@ class Normal:
         """
         z = (x - self.mean) / (self.stddev * (2 ** 0.5))
         return 0.5 * (1 + self._erf(z))
+
+
+if __name__ == "__main__":
+    data = [1, 2, 3, 4, 5]  # Prueba con estos datos o cambia por los que te pidan
+    normal = Normal(data=data)
+
+    print(f"Mean: {normal.mean:.10f}")
+    print(f"Stddev: {normal.stddev:.10f}")
+    print(f"Z-score of 1.0: {normal.z_score(1.0):.10f}")
+    print(f"CDF of 1.0: {normal.cdf(1.0):.10f}")
+
