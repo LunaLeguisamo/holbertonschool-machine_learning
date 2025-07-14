@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import numpy as np
-Binomial = __import__('binomial').Binomial
+Normal = __import__('normal').Normal
 
 np.random.seed(0)
-data = np.random.binomial(50, 0.6, 100).tolist()
-b1 = Binomial(data)
-print('F(30):', b1.cdf(30))
+data = np.random.normal(70, 10, 100).tolist()
+n1 = Normal(data)
+print('PHI(90):', n1.cdf(90))
 
-b2 = Binomial(n=50, p=0.6)
-print('F(30):', b2.cdf(30))
+n2 = Normal(mean=70, stddev=10)
+print('PHI(90):', n2.cdf(90))
