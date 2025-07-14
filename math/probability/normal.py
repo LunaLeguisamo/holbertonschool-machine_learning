@@ -49,10 +49,36 @@ class Normal:
         """
         the form of the curve
         """
-        e = 2.7182818285
-        pi = 3.1415926536
+        pi = 3.141592653589793
+        e = 2.718281828459045
         x = float(x)
 
         num = e ** (-0.5 * ((x - self.mean) / self.stddev) ** 2)
         den = self.stddev * (2 * pi) ** 0.5
         return num / den
+
+    def _erf(self, z):
+        """Aproximación de la función error"""
+        a1 = 0.254829592
+        a2 = -0.284496736
+        a3 = 1.421413741
+        a4 = -1.453152027
+        a5 = 1.061405429
+        p = 0.3275911
+        e = 2.718281828459045
+        
+        sign = 1
+        if z < 0:
+            sign = -1
+            z = -z
+        t = 1.0 / (1.0 + p * z)
+        y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * (e ** (-z * z))
+
+        return sign * y
+
+    def cdf(self, x):
+        """
+        Cumulative Distribution Function
+        """
+        z = (x - self.mean) / (self.stddev * (2 ** 0.5))
+        return 0.5 * (1 + self._erf(z))
