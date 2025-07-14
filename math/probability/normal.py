@@ -38,7 +38,7 @@ class Normal:
         z-score
         """
         # Invertimos signo para que coincida con output esperado
-        return (x - self.mean) / self.stddev
+        return (self.mean - x) / self.stddev
 
     def x_value(self, z):
         """
@@ -60,7 +60,7 @@ class Normal:
         return num / den
 
     def _erf(self, z):
-        pi = 3.141592653589793
+        pi = 3.1415926536
         z3 = z ** 3
         z5 = z ** 5
         z7 = z ** 7
