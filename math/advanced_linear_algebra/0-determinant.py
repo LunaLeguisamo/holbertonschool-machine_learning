@@ -15,8 +15,12 @@ def determinant(matrix):
     Returns: the determinant of matrix
     """
 
-    if not isinstance(matrix, list) or not all(isinstance(row, list) for row in matrix):
+    if not isinstance(matrix, list):
         raise TypeError("matrix must be a list of lists")
+
+    if not all(isinstance(row, list) for row in matrix):
+        raise TypeError("matrix must be a list of lists")
+
     if matrix == []:
         raise TypeError("matrix must be a list of lists")
 
