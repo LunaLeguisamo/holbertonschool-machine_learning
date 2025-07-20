@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
 if __name__ == '__main__':
-    adjugate = __import__('3-adjugate').adjugate
+    inverse = __import__('4-inverse').inverse
 
     mat1 = [[5]]
     mat2 = [[1, 2], [3, 4]]
@@ -10,15 +8,15 @@ if __name__ == '__main__':
     mat5 = []
     mat6 = [[1, 2, 3], [4, 5, 6]]
 
-    print(adjugate(mat1))
-    print(adjugate(mat2))
-    print(adjugate(mat3))
-    print(adjugate(mat4))
+    print(inverse(mat1))
+    print(inverse(mat2))
+    print(inverse(mat3))
+    print(inverse(mat4))
     try:
-        adjugate(mat5)
+        inverse(mat5)
     except Exception as e:
         print(e)
     try:
-        adjugate(mat6)
+        inverse(mat6)
     except Exception as e:
         print(e)
