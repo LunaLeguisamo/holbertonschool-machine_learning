@@ -3,8 +3,6 @@
 Function that calculates the adjugate matrix of a matrix
 """
 
-import numpy as np
-
 
 def determinant(matrix):
     """
