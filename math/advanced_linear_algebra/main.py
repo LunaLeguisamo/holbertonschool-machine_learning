@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 if __name__ == '__main__':
-    minor = __import__('1-minor').minor
+    cofactor = __import__('2-cofactor').cofactor
 
     mat1 = [[5]]
     mat2 = [[1, 2], [3, 4]]
@@ -10,15 +10,15 @@ if __name__ == '__main__':
     mat5 = []
     mat6 = [[1, 2, 3], [4, 5, 6]]
 
-    print(minor(mat1))
-    print(minor(mat2))
-    print(minor(mat3))
-    print(minor(mat4))
+    print(cofactor(mat1))
+    print(cofactor(mat2))
+    print(cofactor(mat3))
+    print(cofactor(mat4))
     try:
-        minor(mat5)
+        cofactor(mat5)
     except Exception as e:
         print(e)
     try:
-        minor(mat6)
+        cofactor(mat6)
     except Exception as e:
         print(e)
