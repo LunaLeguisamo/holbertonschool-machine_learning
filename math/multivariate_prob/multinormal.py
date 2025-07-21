@@ -35,9 +35,9 @@ class MultiNormal:
         """Calculates the PDF at a data point"""
         if not isinstance(x, np.ndarray):
             raise TypeError("x must be a numpy.ndarray")
-        d, b = x.shape
+        d, n = x.shape
         if x.shape != (d, 1):
-            raise ValueError(f"x must have the shape ({d}, 1)")
+            raise ValueError(f"x must have the shape (d, 1)")
 
         # Constantes
         det = np.linalg.det(self.cov)
