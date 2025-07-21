@@ -30,3 +30,25 @@ class MultiNormal:
 
         # Compute covariance matrix manually: cov = (X · Xᵀ) / (n - 1)
         self.cov = (centered @ centered.T) / (n - 1)
+
+    def pdf(self, x):
+        """Calculates the PDF at a data point"""
+        if not isinstance(x, np.ndarray):
+            raise TypeError("x must be a numpy.ndarray")
+        d, b = x.shape
+        if x.shape != (d, 1):
+            raise ValueError(f"x must have the shape ({d}, 1)")
+
+        # Constantes
+        det = np.linalg.det(self.cov)
+        inv = np.linalg.inv(self.cov)
+        norm_const = 1 / (np.sqrt((2 * np.pi) ** d * det))
+
+        # Exponente
+        delta = x - self.mean  # (d, 1)
+        exponent = -0.5 * (delta.T @ inv @ delta)
+
+        # PDF
+        pdf_value = float(norm_const * np.exp(exponent))
+
+        return pdf_value
