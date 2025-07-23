@@ -73,12 +73,12 @@ def intersection(x, n, P, Pr):
 
     if np.any((P < 0) | (P > 1)):
         raise ValueError(
-            "All values in {P} must be in the range [0, 1] where {P}\
+            "All values in P must be in the range [0, 1] where P\
                 is the incorrect variable")
 
     if np.any((Pr < 0) | (Pr > 1)):
         raise ValueError(
-            "All values in {P} must be in the range [0, 1] where {P}\
+            "All values in Pr must be in the range [0, 1] where Pr\
                 is the incorrect variable")
 
     if not np.isclose(np.sum(Pr), 1):
