@@ -17,24 +17,25 @@ def likelihood(x, n, P):
     obtaining the data, x and n, for each probability in P, respectively
     """
 
-    if n < 0 or not isinstance(n, int):
+    if n <= 0 or not isinstance(n, int):
         raise ValueError("n must be a positive integer")
 
-    if not isinstance(x, int) or x <= 0:
+    if not isinstance(x, int) or x < 0:
         raise ValueError("x must be an integer\
             that is greater than or equal to 0")
 
-    if not isinstance(P, np.ndarray):
+    if x > n:
+        raise ValueError("x cannot be greater than n")
+
+    if not isinstance(P, np.ndarray) or P.ndim != 1:
         raise TypeError("P must be a 1D numpy.ndarray")
 
     if np.any((P < 0) | (P > 1)):
         raise ValueError("All values in P must be in the range [0, 1]")
 
-    if x > n:
-        raise ValueError("x cannot be greater than n")
-
     binom = np.math.factorial(n) / (np.math.factorial(
         x) * np.math.factorial(n - x))
+
     likeh_arr = []
     for p in P:
         lk = binom * (p ** x) * ((1 - p) ** (n-x))
