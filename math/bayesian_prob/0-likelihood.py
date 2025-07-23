@@ -5,7 +5,6 @@ of obtaining this data given various hypothetical
 probabilities of developing severe side effects
 """
 import numpy as np
-import scipy as sp
 
 
 def likelihood(x, n, P):
@@ -33,11 +32,12 @@ def likelihood(x, n, P):
 
     if x > n:
         raise ValueError("x cannot be greater than n")
-
-    binomio = sp.special.comb(n, x)
+    
+    binom = np.math.factorial(n) / (np.math.factorial(
+        x) * np.math.factorial(n - x))
     likeh_arr = []
     for p in P:
-        lk = binomio * (p ** x) * ((1 - p) ** (n-x))
+        lk = binom * (p ** x) * ((1 - p) ** (n-x))
         likeh_arr.append(lk)
         array = np.array(likeh_arr)
 
