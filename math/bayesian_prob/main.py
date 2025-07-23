@@ -2,9 +2,8 @@
 
 if __name__ == '__main__':
     import numpy as np
-    intersection = __import__('1-intersection').intersection
+    marginal = __import__('2-marginal').marginal
 
     P = np.linspace(0, 1, 11)
-    Pr = np.ones(11) / 11 # this prior assumes that everything is equally as likely
-    print(intersection(26, 130, P, Pr))
-    
+    Pr = np.ones(11) / 11
+    print(marginal(26, 130, P, Pr))
