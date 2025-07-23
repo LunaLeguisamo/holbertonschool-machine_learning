@@ -17,7 +17,7 @@ def likelihood(x, n, P):
     obtaining the data, x and n, for each probability in P, respectively
     """
 
-    if n <= 0 or not isinstance(n, int):
+    if n < 0 or not isinstance(n, int):
         raise ValueError("n must be a positive integer")
 
     if not isinstance(x, int) or x <= 0:
@@ -32,7 +32,7 @@ def likelihood(x, n, P):
 
     if x > n:
         raise ValueError("x cannot be greater than n")
-    
+
     binom = np.math.factorial(n) / (np.math.factorial(
         x) * np.math.factorial(n - x))
     likeh_arr = []
