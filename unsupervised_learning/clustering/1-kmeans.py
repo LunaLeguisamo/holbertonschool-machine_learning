@@ -71,27 +71,28 @@ def kmeans(X, k, iterations=1000):
 
     clss = np.zeros(n, dtype=int)
 
-    for _ in range(iterations):
-        C_prev = C.copy()
-
+    counter = 0
+    while counter < iterations:
         # Bucle 1: asignar cada punto al centroide más cercano
         for i in range(n):
-            # distancia euclidiana al cuadrado
             distances = np.sum((C - X[i])**2, axis=1)
             clss[i] = np.argmin(distances)
 
         # Bucle 2: actualizar centroides
+        C_new = C.copy()
         for cluster_idx in range(k):
             points = X[clss == cluster_idx]
             if len(points) == 0:
-                # Re-inicializar centroide vacío
-                C[cluster_idx] =\
-                    np.random.uniform(X.min(axis=0), X.max(axis=0))
+                C_new[cluster_idx] = np.random.uniform(X.min(axis=0), X.max(axis=0))
             else:
-                C[cluster_idx] = points.mean(axis=0)
+                C_new[cluster_idx] = points.mean(axis=0)
 
-        # Verificar convergencia
-        if np.allclose(C, C_prev):
+        # Salir si no cambian los centroides
+        if np.allclose(C, C_new):
             break
+
+        C = C_new
+        counter += 1
+
 
     return C, clss
