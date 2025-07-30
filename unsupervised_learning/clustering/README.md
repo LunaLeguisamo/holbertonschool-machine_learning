@@ -1,0 +1,1 @@
+Function that initializes cluster centroids for K-means
