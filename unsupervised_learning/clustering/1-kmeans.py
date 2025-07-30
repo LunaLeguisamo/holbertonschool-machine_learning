@@ -71,28 +71,20 @@ def kmeans(X, k, iterations=1000):
 
     clss = np.zeros(n, dtype=int)
 
-    counter = 0
-    while counter < iterations:
-        # Bucle 1: asignar cada punto al centroide más cercano
-        for i in range(n):
-            distances = np.sum((C - X[i])**2, axis=1)
-            clss[i] = np.argmin(distances)
+    for _ in range(iterations):  # ← ÚNICO bucle permitido
+        # Asignación de puntos a centroides (sin bucle)
+        distances = np.linalg.norm(X[:, np.newaxis] - C, axis=2)  # (n, k)
+        clss = np.argmin(distances, axis=1)  # (n,)
 
-        # Bucle 2: actualizar centroides
-        C_new = C.copy()
-        for cluster_idx in range(k):
-            points = X[clss == cluster_idx]
-            if len(points) == 0:
-                C_new[cluster_idx] = np.random.uniform(X.min(axis=0), X.max(axis=0))
-            else:
-                C_new[cluster_idx] = points.mean(axis=0)
+        # Actualización de centroides (también sin bucle)
+        C_new = np.array([
+            X[clss == i].mean(axis=0) if np.any(clss == i)
+            else np.random.uniform(X.min(axis=0), X.max(axis=0))
+            for i in range(k)
+        ])
 
-        # Salir si no cambian los centroides
         if np.allclose(C, C_new):
             break
-
         C = C_new
-        counter += 1
-
 
     return C, clss
