@@ -31,9 +31,6 @@ def optimum_k(X, kmin=1, kmax=None, iterations=1000):
     if not isinstance(iterations, int) or iterations < 0:
         return None, None
 
-    if not kmax >= kmin:
-        return None, None
-
     results = []
     d_vars = []
 
