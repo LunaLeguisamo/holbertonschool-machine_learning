@@ -14,6 +14,13 @@ def variance(X, C):
     Returns: var, or None on failure
     var is the total variance
     """
+    if not isinstance(X, np.ndarray) or not isinstance(C, np.ndarray):
+        return None
+    if len(X.shape) != 2 or len(C.shape) != 2:
+        return None
+    if X.shape[1] != C.shape[1]:
+        return None
+
     diff = X[:, np.newaxis, :] - C[np.newaxis, :, :]
     distances = np.linalg.norm(diff, axis=2)
     dis_min = np.min(distances, axis=1)
