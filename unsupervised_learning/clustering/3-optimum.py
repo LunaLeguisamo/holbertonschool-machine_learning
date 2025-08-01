@@ -27,40 +27,36 @@ def optimum_k(X, kmin=1, kmax=None, iterations=1000):
 
     n = X.shape[0]
 
-    # Si no se pasa kmax, lo establezco en n
+    # Valor por defecto de kmax
     if kmax is None:
         kmax = n
 
-    # Validaciones de parámetros
-    if not isinstance(kmin, int) or kmin < 1:
+    # Validaciones básicas
+    if not isinstance(kmin, int) or kmin < 1 or kmin >= n:
         return None, None
-
     if not isinstance(kmax, int) or kmax < 1 or kmax > n:
         return None, None
-
-    if not isinstance(iterations, int) or iterations < 1:
+    if kmin >= kmax:
         return None, None
-
-    if kmax < kmin:
+    if not isinstance(iterations, int) or iterations < 1:
         return None, None
 
     results = []
     d_vars = []
 
-    # Cálculo de la varianza base con kmin clusters
-    C_min, _ = kmeans(X, kmin, iterations)
-    if C_min is None:
-        return None, None
-    var_min = variance(X, C_min)
-    if var_min is None:
+    try:
+        C_min, _ = kmeans(X, kmin, iterations)
+        var_min = variance(X, C_min)
+    except Exception:
         return None, None
 
-    # Loop principal desde kmin hasta kmax
+    if C_min is None or var_min is None:
+        return None, None
+
     for k in range(kmin, kmax + 1):
         C, clss = kmeans(X, k, iterations)
         if C is None or clss is None:
             return None, None
-
         var = variance(X, C)
         if var is None:
             return None, None
