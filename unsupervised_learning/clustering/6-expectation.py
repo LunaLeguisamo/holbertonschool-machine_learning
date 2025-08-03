@@ -29,6 +29,9 @@ def expectation(X, pi, m, S):
     if not isinstance(pi, np.ndarray) or pi.ndim != 1:
         return None, None
 
+    if np.any(pi <= 0) or not np.isclose(np.sum(pi), 1):
+        return None, None
+
     if not isinstance(m, np.ndarray) or m.ndim != 2:
         return None, None
 
