@@ -50,4 +50,4 @@ def expectation(X, pi, m, S):
     # Log-likelihood: suma del log de la mezcla total
     log_likelihood = np.sum(np.log(np.sum(mix, axis=0)))
 
-    return g.T, log_likelihood
+    return g, log_likelihood
