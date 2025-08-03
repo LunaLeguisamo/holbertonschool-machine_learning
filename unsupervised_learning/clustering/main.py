@@ -3,6 +3,7 @@
 import numpy as np
 initialize = __import__('4-initialize').initialize
 expectation = __import__('6-expectation').expectation
+maximization = __import__('7-maximization').maximization
 
 if __name__ == '__main__':
     np.random.seed(11)
@@ -13,7 +14,8 @@ if __name__ == '__main__':
     X = np.concatenate((a, b, c, d), axis=0)
     np.random.shuffle(X)
     pi, m, S = initialize(X, 4)
-    g, l = expectation(X, pi, m, S)
-    print(g)
-    print(np.sum(g, axis=0))
-    print(l)
+    g, _ = expectation(X, pi, m, S)
+    pi, m, S = maximization(X, g)
+    print(pi)
+    print(m)
+    print(S)
