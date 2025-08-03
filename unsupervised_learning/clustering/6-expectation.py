@@ -37,13 +37,17 @@ def expectation(X, pi, m, S):
 
     n, d = X.shape
     k = pi.shape[0]
-    g = np.zeros((k, n))  # responsabilidades
+
+    mix = np.zeros((k, n))
 
     for i in range(k):
-        P = pdf(X, m[i], S[i])  # probabilidad bajo el clúster i
-        g[i] = pi[i] * P        # paso clave: combinar pdf con el priori
+        P = pdf(X, m[i], S[i])  # Probabilidad del punto según la gaussiana i
+        mix[i] = pi[i] * P      # Multiplicamos por el peso del clúster
 
-    g_sum = np.sum(g, axis=0, keepdims=True)  # suma por punto
-    g /= g_sum  # ahora g[k, n] representa responsabilidades normalizadas
-    log_likelihood = np.sum(np.log(np.sum(g, axis=0)))
+    # Normalizar responsabilidades (para que sumen 1 en cada punto)
+    g = mix / np.sum(mix, axis=0, keepdims=True)
+
+    # Log-likelihood: suma del log de la mezcla total
+    log_likelihood = np.sum(np.log(np.sum(mix, axis=0)))
+
     return g.T, log_likelihood
