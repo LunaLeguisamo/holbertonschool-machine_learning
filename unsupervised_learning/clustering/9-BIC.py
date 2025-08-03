@@ -5,7 +5,7 @@ for a GMM using the Bayesian Information Criterion
 """
 
 import numpy as np
-EM = __import__('8-EM').expectation_maximization
+expectation_maximization = __import__('8-EM').expectation_maximization
 
 
 def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
@@ -32,7 +32,7 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
     bics = []
 
     for k in range(kmin, kmax + 1):
-        results = EM(X, k, iterations, tol, verbose)
+        results = expectation_maximization(X, k, iterations, tol, verbose)
 
         if results is None:
             return None, None, None, None
