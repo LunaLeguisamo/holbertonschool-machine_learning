@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
+import matplotlib.pyplot as plt
 import numpy as np
-initialize = __import__('4-initialize').initialize
-expectation = __import__('6-expectation').expectation
-maximization = __import__('7-maximization').maximization
+expectation_maximization = __import__('8-EM').expectation_maximization
 
 if __name__ == '__main__':
     np.random.seed(11)
@@ -13,9 +12,13 @@ if __name__ == '__main__':
     d = np.random.multivariate_normal([20, 70], [[35, 10], [10, 35]], size=1000)
     X = np.concatenate((a, b, c, d), axis=0)
     np.random.shuffle(X)
-    pi, m, S = initialize(X, 4)
-    g, _ = expectation(X, pi, m, S)
-    pi, m, S = maximization(X, g)
-    print(pi)
+    k = 4
+    pi, m, S, g, l = expectation_maximization(X, k, 150, verbose=True)
+    clss = np.sum(g * np.arange(k).reshape(k, 1), axis=0)
+    plt.scatter(X[:, 0], X[:, 1], s=20, c=clss)
+    plt.scatter(m[:, 0], m[:, 1], s=50, c=np.arange(k), marker='*')
+    plt.show()
+    print(X.shape[0] * pi)
     print(m)
     print(S)
+    print(l)
