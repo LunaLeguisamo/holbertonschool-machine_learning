@@ -23,6 +23,18 @@ def pdf(X, m, S):
     for each data point
     All values in P should have a minimum value of 1e-300
     """
+    if not isinstance(X, np.ndarray) or X.ndim != 2:
+        return None
+    if not isinstance(m, np.ndarray) or m.ndim != 1:
+        return None
+    if not isinstance(S, np.ndarray) or S.ndim != 2:
+        return None
+    n, d = X.shape
+    if m.shape[0] != d:
+        return None
+    if S.shape != (d, d):
+        return None
+
     diff = X - m
     inv_S = np.linalg.inv(S)
     det_S = np.linalg.det(S)
