@@ -3,7 +3,7 @@
 Function that calculates a GMM from a dataset
 """
 
-import sklearn.cluster as sk
+import sklearn.mixture as sk
 
 
 def gmm(X, k):
@@ -20,7 +20,7 @@ def gmm(X, k):
     bic is a numpy.ndarray of shape (kmax - kmin + 1) containing the BIC value
     for each cluster size tested
     """
-    gmm = sk.mixture.GaussianMixture(n_components=k)
+    gmm = sk.GaussianMixture(n_components=k)
     gmm.fit(X)
     pi = gmm.weights_
     m = gmm.means_
