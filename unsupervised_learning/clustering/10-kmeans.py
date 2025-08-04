@@ -3,7 +3,6 @@
 Function that performs K-means on a dataset
 """
 
-import numpy as np
 from sklearn.cluster import KMeans
 
 
