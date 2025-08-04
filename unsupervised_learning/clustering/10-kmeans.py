@@ -3,7 +3,7 @@
 Function that performs K-means on a dataset
 """
 
-from sklearn.cluster import KMeans
+import sklearn.cluster as sk
 
 
 def kmeans(X, k):
@@ -16,7 +16,7 @@ def kmeans(X, k):
     clss is a numpy.ndarray of shape (n,) containing the index of
     the cluster in C that each data point belongs to
     """
-    kmeans_model = KMeans(n_clusters=k, random_state=0)
+    kmeans_model = sk.KMeans(n_clusters=k, random_state=0)
     kmeans_model.fit(X)
     C = kmeans_model.cluster_centers_
     clss = kmeans_model.labels_
