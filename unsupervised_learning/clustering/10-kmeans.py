@@ -16,8 +16,11 @@ def kmeans(X, k):
     clss is a numpy.ndarray of shape (n,) containing the index of
     the cluster in C that each data point belongs to
     """
-    kmeans_model = sk.KMeans(n_clusters=k, random_state=0)
-    kmeans_model.fit(X)
-    C = kmeans_model.cluster_centers_
-    clss = kmeans_model.labels_
-    return C, clss
+    kmeans = sk.KMeans(n_clusters=k)
+
+    kmeans.fit(X)
+
+    c = kmeans.cluster_centers_
+    clss = kmeans.labels_
+
+    return c, clss
