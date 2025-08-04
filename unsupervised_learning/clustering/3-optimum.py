@@ -22,46 +22,37 @@ def optimum_k(X, kmin=1, kmax=None, iterations=1000):
     d_vars is a list containing the difference in variance from the smallest
     cluster size for each cluster size
     """
+    # Valido que X sea un ndarray 2D
     if not isinstance(X, np.ndarray) or X.ndim != 2:
         return None, None
 
     n = X.shape[0]
 
-    # Valor por defecto de kmax
+    # Valido kmin y kmax
+    if not isinstance(kmin, int) or kmin <= 0 or kmin >= n:
+        return None, None
+
     if kmax is None:
         kmax = n
 
-    # Validaciones básicas
-    if not isinstance(kmin, int) or kmin < 1 or kmin >= n:
-        return None, None
-    if not isinstance(kmax, int) or kmax < 1 or kmax > n:
-        return None, None
-    if kmin >= kmax:
-        return None, None
-    if not isinstance(iterations, int) or iterations < 1:
+    if not isinstance(kmax, int) or kmax <= 0 or kmax > n or kmax < kmin + 1:
         return None, None
 
     results = []
     d_vars = []
 
-    try:
-        C_min, _ = kmeans(X, kmin, iterations)
-        var_min = variance(X, C_min)
-    except Exception:
-        return None, None
-
-    if C_min is None or var_min is None:
-        return None, None
-
     for k in range(kmin, kmax + 1):
         C, clss = kmeans(X, k, iterations)
         if C is None or clss is None:
             return None, None
+        results.append((C, clss))
         var = variance(X, C)
         if var is None:
             return None, None
 
-        results.append((C, clss))
-        d_vars.append(var_min - var)
+        d_vars.append(var)
+
+    base_var = d_vars[0]
+    d_vars = [base_var - v for v in d_vars]
 
     return results, d_vars
