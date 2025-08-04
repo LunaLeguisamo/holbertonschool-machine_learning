@@ -1,30 +1,21 @@
 #!/usr/bin/env python3
-
-import matplotlib.pyplot as plt
 import numpy as np
-BIC = __import__('9-BIC').BIC
+import matplotlib.pyplot as plt
+kmeans = __import__('10-kmeans').kmeans
 
-if __name__ == '__main__':
-    np.random.seed(11)
-    a = np.random.multivariate_normal([30, 40], [[75, 5], [5, 75]], size=10000)
-    b = np.random.multivariate_normal([5, 25], [[16, 10], [10, 16]], size=750)
-    c = np.random.multivariate_normal([60, 30], [[16, 0], [0, 16]], size=750)
-    d = np.random.multivariate_normal([20, 70], [[35, 10], [10, 35]], size=1000)
-    X = np.concatenate((a, b, c, d), axis=0)
+if __name__ == "__main__":
+    np.random.seed(0)
+    a = np.random.multivariate_normal([30, 40], [[16, 0], [0, 16]], size=50)
+    b = np.random.multivariate_normal([10, 25], [[16, 0], [0, 16]], size=50)
+    c = np.random.multivariate_normal([40, 20], [[16, 0], [0, 16]], size=50)
+    d = np.random.multivariate_normal([60, 30], [[16, 0], [0, 16]], size=50)
+    e = np.random.multivariate_normal([20, 70], [[16, 0], [0, 16]], size=50)
+    X = np.concatenate((a, b, c, d, e), axis=0)
     np.random.shuffle(X)
-    best_k, best_result, l, b = BIC(X, kmin=1, kmax=10)
-    print(best_k)
-    print(best_result)
-    print(l)
-    print(b)
-    x = np.arange(1, 11)
-    plt.plot(x, l, 'r')
-    plt.xlabel('Clusters')
-    plt.ylabel('Log Likelihood')
-    plt.tight_layout()
+
+    C, clss = kmeans(X, 5)
+    print(C)
+    plt.scatter(X[:, 0], X[:, 1], s=10, c=clss)
+    plt.scatter(C[:, 0], C[:, 1], s=50, marker='*', c=list(range(5)))
     plt.show()
-    plt.plot(x, b, 'b')
-    plt.xlabel('Clusters')
-    plt.ylabel('BIC')
-    plt.tight_layout()
-    plt.show()
+    
