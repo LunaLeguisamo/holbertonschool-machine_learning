@@ -57,34 +57,44 @@ def kmeans(X, k, iterations=1000):
     each cluster clss is a numpy.ndarray of shape (n,) containing the index of
     the cluster in C that each data point belongs to
     """
-    if not isinstance(X, np.ndarray) or X.ndim != 2:
+    if not isinstance(X, np.ndarray) or len(X.shape) != 2:
         return None, None
-    if not isinstance(k, int) or k <= 0:
+    if not isinstance(k, int) or k <= 0 or k > X.shape[0]:
         return None, None
     if not isinstance(iterations, int) or iterations <= 0:
         return None, None
 
-    n, d = X.shape
     C = initialize(X, k)
     if C is None:
         return None, None
 
-    clss = np.zeros(n, dtype=int)
+    min_vals = np.min(X, axis=0)
+    max_vals = np.max(X, axis=0)
+    clss = np.zeros(X.shape[0], dtype=int)
 
-    for _ in range(iterations):  # ← ÚNICO bucle permitido
-        # Asignación de puntos a centroides (sin bucle)
-        distances = np.linalg.norm(X[:, np.newaxis] - C, axis=2)  # (n, k)
-        clss = np.argmin(distances, axis=1)  # (n,)
+    for _ in range(iterations):
+        X_vectors = np.repeat(X[:, np.newaxis], k, axis=1)
+        X_vectors = np.reshape(X_vectors, (X.shape[0], k, X.shape[1]))
+        C_vectors = np.tile(C[np.newaxis, :], (X.shape[0], 1, 1))
+        C_vectors = np.reshape(C_vectors, (X.shape[0], k, X.shape[1]))
+        # Calculate Euclidean distances
+        distances = np.linalg.norm(X_vectors - C_vectors, axis=2)
+        new_clss = np.argmin(distances, axis=1)
 
-        # Actualización de centroides (también sin bucle)
-        C_new = np.array([
-            X[clss == i].mean(axis=0) if np.any(clss == i)
-            else np.random.uniform(X.min(axis=0), X.max(axis=0))
-            for i in range(k)
-        ])
+        C_prev = C.copy()
+        for j in range(k):
+            mask = (new_clss == j)
+            if np.any(mask):
+                C[j] = X[mask].mean(axis=0)
+            else:
+                C[j] = np.random.uniform(
+                    low=min_vals, high=max_vals, size=X.shape[1])
 
-        if np.allclose(C, C_new):
-            break
-        C = C_new
+        if np.all(C == C_prev):
+            return C, clss
+        C_vectors = np.tile(C, (X.shape[0], 1))
+        C_vectors = C_vectors.reshape(X.shape[0], k, X.shape[1])
+        distance = np.linalg.norm(X_vectors - C_vectors, axis=2)
+        clss = np.argmin(distance ** 2, axis=1)
 
     return C, clss
