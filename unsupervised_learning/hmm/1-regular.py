@@ -16,33 +16,31 @@ def regular(P):
     Returns: a numpy.ndarray of shape (1, n) containing the steady state
     probabilities, or None on failure
     """
-    if not isinstance(P, np.ndarray) or P.ndim != 2:
+    if not isinstance(P, np.ndarray) or len(P.shape) != 2:
         return None
-
     if P.shape[0] != P.shape[1]:
         return None
-    
-    if not np.allclose(P.sum(axis=1), 1):
-        return None
-    
-    is_regular = False
-    for i in range(1, 20):
-        P = np.linalg.matrix_power(P, i)
-        if np.all(P > 0):
-            is_regular = True
-            break
 
-    if not is_regular:
+    # Check if rows sum to 1
+    if not np.allclose(np.sum(P, axis=1), 1):
         return None
 
-    n, _ = P.shape
-
-    s = np.ones((1, n)) / n  # distribución uniforme inicial
-
-    for i in range(20):
-        s_next = s @ P
-        if np.allclose(s_next, s, atol=1e-8):
+    # Check if regular: P^k > 0 for some k
+    n = P.shape[0]
+    power = np.copy(P)
+    for _ in range(1, 100):
+        power = power @ P
+        if np.all(power > 0):
             break
-        s = s_next
+    else:
+        return None  # Not regular
 
-    return np.round(s, 8)
+    # Use initial distribution
+    pi = np.ones((1, n)) / n
+    for _ in range(1000):
+        pi_next = pi @ P
+        if np.allclose(pi_next, pi, atol=1e-8):
+            return np.round(pi_next, 8)
+        pi = pi_next
+
+    return np.round(pi, 8)
