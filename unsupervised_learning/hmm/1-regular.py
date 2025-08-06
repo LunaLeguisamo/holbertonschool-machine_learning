@@ -41,7 +41,7 @@ def regular(P):
 
     for i in range(500):
         s_next = s @ P
-        if np.allclose(s_next, s):
+        if np.allclose(s_next, s, atol=1e-8):
             break
         s = s_next
 
