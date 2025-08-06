@@ -37,10 +37,15 @@ def regular(P):
 
     # Use initial distribution
     pi = np.ones((1, n)) / n
-    for _ in range(1000):
+    for _ in range(10000):  # Increased iterations
         pi_next = pi @ P
-        if np.allclose(pi_next, pi, atol=1e-8):
-            return np.round(pi_next, 8)
+        if np.allclose(pi_next, pi, atol=1e-10):  # More strict tolerance
+            pi = pi_next
+            break
         pi = pi_next
 
+    # Round to 8 decimal places
+    pi = np.round(pi, 8)
+    # Normalize to ensure exact fractions when possible
+    pi = pi / np.sum(pi)
     return np.round(pi, 8)
