@@ -26,7 +26,7 @@ def regular(P):
         return None
     
     is_regular = False
-    for i in range(1, 40):
+    for i in range(1, 20):
         P = np.linalg.matrix_power(P, i)
         if np.all(P > 0):
             is_regular = True
@@ -39,10 +39,10 @@ def regular(P):
 
     s = np.ones((1, n)) / n  # distribución uniforme inicial
 
-    for i in range(500):
+    for i in range(20):
         s_next = s @ P
         if np.allclose(s_next, s, atol=1e-8):
             break
         s = s_next
 
-    return s
+    return np.round(s, 8)
