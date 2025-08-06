@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Write the function that determines the
-steady state probabilities of a regular markov chain
+Write the function that determines the steady state
+probabilities of a regular markov chain
 """
 
 import numpy as np
@@ -9,12 +9,8 @@ import numpy as np
 
 def regular(P):
     """
-    P is a is a square 2D numpy.ndarray of shape (n, n)
-    representing the transition matrix
-    P[i, j] is the probability of transitioning from state i to state j
-    n is the number of states in the markov chain
-    Returns: a numpy.ndarray of shape (1, n) containing the steady state
-    probabilities, or None on failure
+    P is a square 2D numpy.ndarray representing the transition matrix.
+    Returns the steady state probabilities or None on failure.
     """
     if not isinstance(P, np.ndarray) or len(P.shape) != 2:
         return None
@@ -35,17 +31,18 @@ def regular(P):
     else:
         return None  # Not regular
 
-    # Use initial distribution
-    pi = np.ones((1, n)) / n
-    for _ in range(10000):  # Increased iterations
-        pi_next = pi @ P
-        if np.allclose(pi_next, pi, atol=1e-10):  # More strict tolerance
-            pi = pi_next
-            break
-        pi = pi_next
+    # Solve the linear system: π(P - I) = 0, with ∑π = 1
+    A = (P - np.eye(n)).T  # Transpose for solving Ax = 0
+    b = np.zeros(n)
+    # Replace last equation with ∑π = 1
+    A[-1] = np.ones(n)
+    b[-1] = 1
 
-    # Round to 8 decimal places
-    pi = np.round(pi, 8)
-    # Normalize to ensure exact fractions when possible
-    pi = pi / np.sum(pi)
-    return np.round(pi, 8)
+    try:
+        pi = np.linalg.solve(A, b)
+    except np.linalg.LinAlgError:
+        return None  # Singular matrix (shouldn't happen for regular chains)
+
+    # Round to 8 decimal places and reshape to (1, n)
+    pi_rounded = np.round(pi, 8).reshape(1, -1)
+    return pi_rounded
