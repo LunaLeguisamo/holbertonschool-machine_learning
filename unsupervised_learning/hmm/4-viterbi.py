@@ -43,24 +43,30 @@ def viterbi(Observation, Emission, Transition, Initial):
 
     T = Observation.shape[0]
     N = Emission.shape[0]
-    V = np.zeros((N, T))
-    path = np.zeros(T, dtype=int)
 
-    # Paso inicial
-    V[:, 0] = Initial[:, 0] * Emission[:, Observation[0]]
+    # Usamos log-probabilities para evitar underflow
+    log_V = np.zeros((N, T))
+    backpointer = np.zeros((N, T), dtype=int)
+
+    # Paso inicial (en log)
+    log_V[:, 0] = np.log(Initial[:, 0]) + np.log(Emission[:, Observation[0]])
 
     # Iteración Viterbi
     for t in range(1, T):
         for j in range(N):
-            prob = V[:, t-1] * Transition[:, j] * Emission[j, Observation[t]]
-            V[j, t] = np.max(prob)
-            path[t] = np.argmax(prob)
+            log_prob = log_V[:, t-1] + np.log(Transition[:, j])\
+                + np.log(Emission[j, Observation[t]])
+            log_V[j, t] = np.max(log_prob)
+            backpointer[j, t] = np.argmax(log_prob)
 
-    # Probabilidad total de la secuencia observada
-    P = np.max(V[:, -1])
+    # Probabilidad total (en log)
+    log_P = np.max(log_V[:, -1])
+    P = np.exp(log_P)  # Convertimos a probabilidad normal (opcional)
 
-    # Reconstruir el camino
-    for t in range(T - 1, 0, -1):
-        path[t] = path[t - 1]
+    # Reconstrucción del camino (backtracking)
+    path = np.zeros(T, dtype=int)
+    path[-1] = np.argmax(log_V[:, -1])
+    for t in range(T - 2, -1, -1):
+        path[t] = backpointer[path[t + 1], t + 1]
 
     return path.tolist(), P
