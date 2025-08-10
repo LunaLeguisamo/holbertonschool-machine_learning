@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-viterbi = __import__('4-viterbi').viterbi
+backward = __import__('5-backward').backward
 
 if __name__ == '__main__':
     np.random.seed(1)
@@ -24,6 +24,6 @@ if __name__ == '__main__':
     for s in Hidden:
         Observations.append(np.random.choice(6, p=Emission[s]))
     Observations = np.array(Observations)
-    path, P = viterbi(Observations, Emission, Transition, Initial.reshape((-1, 1)))
+    P, B = backward(Observations, Emission, Transition, Initial.reshape((-1, 1)))
     print(P)
-    print(path)
+    print(B) 
