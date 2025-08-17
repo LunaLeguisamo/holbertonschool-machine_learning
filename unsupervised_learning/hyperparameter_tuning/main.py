@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 GP = __import__('2-gp').GaussianProcess
+BO = __import__('3-bayes_opt').BayesianOptimization
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -13,12 +15,13 @@ if __name__ == '__main__':
     X_init = np.random.uniform(-np.pi, 2*np.pi, (2, 1))
     Y_init = f(X_init)
 
-    gp = GP(X_init, Y_init, l=0.6, sigma_f=2)
-    X_new = np.random.uniform(-np.pi, 2*np.pi, 1)
-    print('X_new:', X_new)
-    Y_new = f(X_new)
-    print('Y_new:', Y_new)
-    gp.update(X_new, Y_new)
-    print(gp.X.shape, gp.X)
-    print(gp.Y.shape, gp.Y)
-    print(gp.K.shape, gp.K)
+    bo = BO(f, X_init, Y_init, (-np.pi, 2*np.pi), 50, l=2, sigma_f=3, xsi=0.05)
+    print(bo.f is f)
+    print(type(bo.gp) is GP)
+    print(bo.gp.X is X_init)
+    print(bo.gp.Y is Y_init)
+    print(bo.gp.l)
+    print(bo.gp.sigma_f)
+    print(bo.X_s.shape, bo.X_s)
+    print(bo.xsi)
+    print(bo.minimize)
