@@ -78,7 +78,6 @@ class GaussianProcess:
 
         return mu, sigma
 
-    
     def update(self, X_new, Y_new):
         """
         Updates a Gaussian Process:
