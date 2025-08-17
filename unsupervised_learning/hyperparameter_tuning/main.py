@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-GP = __import__('0-gp').GaussianProcess
+GP = __import__('1-gp').GaussianProcess
 import numpy as np
 
 
@@ -14,9 +14,8 @@ if __name__ == '__main__':
     Y_init = f(X_init)
 
     gp = GP(X_init, Y_init, l=0.6, sigma_f=2)
-    print(gp.X is X_init)
-    print(gp.Y is Y_init)
-    print(gp.l)
-    print(gp.sigma_f)
-    print(gp.K.shape, gp.K)
-    print(np.allclose(gp.kernel(X_init, X_init), gp.K))
+    X_s = np.random.uniform(-np.pi, 2*np.pi, (10, 1))
+    mu, sig = gp.predict(X_s)
+    print(mu.shape, mu)
+    print(sig.shape, sig)
+    
