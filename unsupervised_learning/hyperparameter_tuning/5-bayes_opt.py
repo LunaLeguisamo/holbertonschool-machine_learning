@@ -105,8 +105,11 @@ class BayesianOptimization:
                 break
             Y_next = self.f(X_next)
             self.gp.update(X_next, Y_next)
-            idx_opt = np.argmax(self.gp.Y)
-            X_opt = self.gp.X[idx_opt]
-            Y_opt = self.gp.Y[idx_opt]
+            if self.minimize:
+                idx_opt = np.argmin(self.gp.Y)
+            else:
+                idx_opt = np.argmax(self.gp.Y)
+            X_opt = self.gp.X[idx_opt].reshape(1,)
+            Y_opt = self.gp.Y[idx_opt].reshape(1,)
 
         return X_opt, Y_opt
