@@ -100,16 +100,27 @@ class BayesianOptimization:
         optimal function value
         """
         for i in range(iterations):
+        # 1. Proponer el siguiente punto según la adquisición
             X_next, EI = self.acquisition()
+
+        # 2. Evitar puntos duplicados usando np.isclose para floats
             if np.any(np.isclose(self.gp.X, X_next)):
                 break
+
+            # 3. Evaluar la función black-box en ese punto
             Y_next = self.f(X_next)
+
+            # 4. Actualizar el Gaussian Process
             self.gp.update(X_next, Y_next)
-            if self.minimize:
-                idx_opt = np.argmin(self.gp.Y)
-            else:
-                idx_opt = np.argmax(self.gp.Y)
-            X_opt = self.gp.X[idx_opt].reshape(1,)
-            Y_opt = self.gp.Y[idx_opt].reshape(1,)
+
+            # 5. Elegir el mejor punto según minimize o maximize
+        if self.minimize:
+            idx_opt = np.argmin(self.gp.Y)  # menor Y para minimizar
+        else:
+            idx_opt = np.argmax(self.gp.Y)  # mayor Y para maximizar
+
+        # 6. Devolver X_opt y Y_opt con shape (1,)
+        X_opt = self.gp.X[idx_opt].reshape(1,)
+        Y_opt = self.gp.Y[idx_opt].reshape(1,)
 
         return X_opt, Y_opt
