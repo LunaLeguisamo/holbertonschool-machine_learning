@@ -101,7 +101,7 @@ class BayesianOptimization:
         """
         for i in range(iterations):
             X_next, EI = self.acquisition()
-            if np.any(np.all(self.gp.X == X_next, axis=1)):
+            if np.any(np.isclose(self.gp.X, X_next)):
                 break
             Y_next = self.f(X_next)
             self.gp.update(X_next, Y_next)
