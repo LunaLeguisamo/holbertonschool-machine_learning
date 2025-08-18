@@ -58,32 +58,27 @@ class BayesianOptimization:
         Method that calculates the next best sample location
         Uses the Expected Improvement acquisition function
         Returns: X_next, EI
-        X_next is a numpy.ndarray of shape (1,) representing
-        the next best sample point
-        EI is a numpy.ndarray of shape (ac_samples,) containing
-        the expected improvement of each potential sample
         """
+        # Predecir media y desviación estándar para todos los puntos de X_s
         mu, sigma = self.gp.predict(self.X_s)
 
-        # Best observed value so far
-        Y_opt = np.min(self.gp.Y) if self.minimize else np.max(self.gp.Y)
+        # Evitar división por cero
+        sigma = sigma.reshape(-1,) + 1e-8
 
-        # Improvement
+        # Mejor valor actual según minimize o maximize
         if self.minimize:
+            Y_opt = np.min(self.gp.Y)
             I = Y_opt - mu - self.xsi
         else:
-            I = mu - Y_opt - self.xsi
+            Y_opt = np.max(self.gp.Y)
+            I = mu - Y_opt - self.xsi  # nota: para maximización
 
-        # Avoid division by zero in Z
-        Z = np.zeros_like(I)
-        mask = sigma > 0
-        Z[mask] = I[mask] / sigma[mask]
-
-        # Expected Improvement
+        Z = I / sigma
         EI = I * norm.cdf(Z) + sigma * norm.pdf(Z)
 
-        # Next best sample
-        X_next = self.X_s[np.argmax(EI)]
+        # Elegir el índice del EI máximo
+        idx_max = np.argmax(EI)
+        X_next = self.X_s[idx_max]  # <-- valor real, no índice
 
         return X_next, EI
 
@@ -94,16 +89,12 @@ class BayesianOptimization:
         If the next proposed point is one that has already been sampled,
         optimization should be stopped early
         Returns: X_opt, Y_opt
-        X_opt is a numpy.ndarray of shape (1,) representing the
-        optimal point
-        Y_opt is a numpy.ndarray of shape (1,) representing the
-        optimal function value
         """
         for i in range(iterations):
-        # 1. Proponer el siguiente punto según la adquisición
+            # 1. Proponer el siguiente punto según la adquisición
             X_next, EI = self.acquisition()
 
-        # 2. Evitar puntos duplicados usando np.isclose para floats
+            # 2. Evitar puntos duplicados usando np.isclose para floats
             if np.any(np.isclose(self.gp.X, X_next)):
                 break
 
@@ -113,11 +104,11 @@ class BayesianOptimization:
             # 4. Actualizar el Gaussian Process
             self.gp.update(X_next, Y_next)
 
-            # 5. Elegir el mejor punto según minimize o maximize
+        # 5. Elegir el mejor punto según minimize o maximize
         if self.minimize:
-            idx_opt = np.argmin(self.gp.Y)  # menor Y para minimizar
+            idx_opt = np.argmin(self.gp.Y)
         else:
-            idx_opt = np.argmax(self.gp.Y)  # mayor Y para maximizar
+            idx_opt = np.argmax(self.gp.Y)
 
         # 6. Devolver X_opt y Y_opt con shape (1,)
         X_opt = self.gp.X[idx_opt].reshape(1,)
