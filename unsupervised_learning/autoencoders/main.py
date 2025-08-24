@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-autoencoder = __import__('0-vanilla').autoencoder
+autoencoder = __import__('1-sparse').autoencoder
 
 SEED = 0
 
@@ -24,7 +24,7 @@ x_test = x_test.astype('float32') / 255.
 x_train = x_train.reshape((-1, 784))
 x_test = x_test.reshape((-1, 784))
 
-encoder, decoder, auto = autoencoder(784, [128, 64], 32)
+encoder, decoder, auto = autoencoder(784, [128, 64], 32, 10e-6)
 auto.fit(x_train, x_train, epochs=50,batch_size=256, shuffle=True,
                 validation_data=(x_test, x_test))
 encoded = encoder.predict(x_test[:10])
