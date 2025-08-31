@@ -52,6 +52,7 @@ class Simple_GAN(keras.Model):
             )
 
     def get_fake_sample(self, size=None, training=False):
+        """Get a fake sample from the generator"""
         if not size:
             size = self.batch_size
         return self.generator(self.latent_generator(size),
@@ -59,6 +60,7 @@ class Simple_GAN(keras.Model):
                               )
 
     def get_real_sample(self, size=None):
+        """Get a real sample from the real examples"""
         if not size:
             size = self.batch_size
         sorted_indices = tf.range(tf.shape(self.real_examples)[0])
@@ -66,6 +68,7 @@ class Simple_GAN(keras.Model):
         return tf.gather(self.real_examples, random_indices)
 
     def train_step(self, useless_argument):
+        """Train the GAN model"""
         # Train discriminator disc_iter times
         for _ in range(self.disc_iter):
             with tf.GradientTape() as tape:
