@@ -4,8 +4,10 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import random
+import matplotlib.pyplot as plt
 
-Simple_GAN = __import__('0-simple_gan').Simple_GAN
+WGAN_clip = __import__('1-wgan_clip').WGAN_clip
+
 
 ## Regulating the seed
 
@@ -79,9 +81,92 @@ def example_fully_connected_GAN(chosen_type ,real_examples, gen_shape, epochs,  
 
 ## An example of a large real sample
 
-circle_example = lambda k : spheric_generator(k, 2)*.3+.5
+def four_clouds_example(N_real):
+    X   = np.random.randn( N_real)*.05
+    Y   = np.random.randn( N_real)*.05
+    X[:N_real//2]+=.75
+    X[N_real//2:]+=.25
+    Y[N_real//4:N_real//2]+=.25
+    Y[:N_real//4]+=.75
+    Y[N_real//2:3*N_real//4]+=.75
+    Y[3*N_real//4:]+=.25
+    R   = np.minimum(X*X,1)
+    G   = np.minimum(Y*Y,1)
+    B   = np.maximum(1-R-G,0)
+    return tf.convert_to_tensor(np.vstack([X,Y,R,G,B]).T)
+
+
+## Visualize 5D the result of G
+
+def visualize_5D(G, show=True, title=None, filename=None, dpi=200):
+    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+    for ax in axes.flatten():
+        ax.set_xlim(-.1, 1.1)
+        ax.set_ylim(-.1, 1.1)
+
+    X_tf = G.real_examples
+    X = X_tf.numpy()
+    axes[0, 0].scatter(X[:, 0], X[:, 1], c=X[:, 2:], s=1)
+    axes[0, 0].set_title("real")
+
+    lat = G.latent_generator(10000)
+    Y_tf = G.generator(lat)
+    Y = Y_tf.numpy()
+    axes[0, 1].scatter(Y[:, 0], Y[:, 1], c=Y[:, 2:], s=1)
+    axes[0, 1].set_title("fake = generator(latent sample) ")
+
+    cX = G.discriminator(X_tf).numpy()
+    cY = G.discriminator(Y_tf).numpy()
+    m = min(np.min(cX), np.min(cY))
+    M = max(np.max(cX), np.max(cY))
+
+    axes[1, 0].scatter(X[:, 0], X[:, 1], c=cX, s=1, vmin=m, vmax=M)
+    axes[1, 0].set_title("discriminator(real)")
+
+    Y = G.generator(G.latent_generator(10000)).numpy()
+    axes[1, 1].scatter(Y[:, 0], Y[:, 1], c=cY, s=1, vmin=m, vmax=M)
+    axes[1, 1].set_title("discriminator(fake)")
+
+    for i in range(2):
+        axes[i, 2].set_xlim(-3, 3)
+        axes[i, 2].set_ylim(-3, 3)
+
+    A = np.linspace(-3, 3, 150)
+    B = np.linspace(-3, 3, 150)
+    X, Y = np.meshgrid(A, B)
+    U = tf.convert_to_tensor(np.vstack([X.ravel(), Y.ravel()]).T)
+
+    X = G.discriminator(G.generator(U)).numpy()
+    u = axes[0, 2].pcolormesh(A, B, X[:, 0].reshape([150, 150]), shading='gouraud')
+
+    axes[0, 2].set_title(r"discriminator $\circ$ generator on latent space")
+
+    axes[1, 2].scatter(lat.numpy()[:, 0], lat.numpy()[:, 1], c=cY, s=1)
+    axes[1, 2].set_title(r"discriminator $\circ$ generator on latent sample")
+    # sci = lambda x : "{:.2E}".format(.99*x*(x>0)+1.01*x*(x<0))
+    # cb=fig.colorbar(u, ax=axes[1])
+    ##cb.set_ticks([sci(np.min(X[:,0])), 0, sci(np.max(X[:,0]))])
+    # cb.ax.tick_params(labelsize=5)
+
+    # some more tuning:
+    for a in axes.flatten():
+        a.tick_params(axis='both', which='major', labelsize=5)
+        a.tick_params(axis='both', which='minor', labelsize=5)
+
+    if title:
+        fig.suptitle(title)
+
+    if filename:
+        plt.savefig(filename, dpi=dpi)
+        if show:
+            plt.show()
+        plt.close()
+
+    elif show:
+        plt.show()
 
 ## LET'S GO !
 
 set_seeds(0)
-G=example_fully_connected_GAN(Simple_GAN,circle_example(1000), [1,10,10,2], 16, steps_per_epoch=100, learning_rate=.001)
+G = example_fully_connected_GAN(WGAN_clip ,four_clouds_example(1000), [2,10,10,5], 16, steps_per_epoch=100, learning_rate=.001)
+visualize_5D(G,show=True, title=f"after 16 epochs")
