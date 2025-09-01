@@ -6,8 +6,7 @@ from tensorflow import keras
 import random
 import matplotlib.pyplot as plt
 
-WGAN_clip = __import__('1-wgan_clip').WGAN_clip
-
+WGAN_GP = __import__('2-wgan_gp').WGAN_GP
 
 ## Regulating the seed
 
@@ -15,11 +14,6 @@ def set_seeds(seed) :
     random.seed(seed)
     np.random.seed(seed)
     tf.random.set_seed(seed)
-
-
-def hash_tensor(tensor) :
-    return np.sum(np.array([hash(x)%2**30 for x in tensor.numpy().flatten()]))%2**30
-
 
 def spheric_generator(nb_points, dim) :
     u=tf.random.normal(shape=(nb_points, dim))
@@ -93,7 +87,7 @@ def four_clouds_example(N_real):
     R   = np.minimum(X*X,1)
     G   = np.minimum(Y*Y,1)
     B   = np.maximum(1-R-G,0)
-    return tf.convert_to_tensor(np.vstack([X,Y,R,G,B]).T)
+    return tf.convert_to_tensor(np.vstack([X,Y,R,G,B]).T,dtype="float32")
 
 
 ## Visualize 5D the result of G
@@ -168,5 +162,5 @@ def visualize_5D(G, show=True, title=None, filename=None, dpi=200):
 ## LET'S GO !
 
 set_seeds(0)
-G = example_fully_connected_GAN(WGAN_clip ,four_clouds_example(1000), [2,10,10,5], 16, steps_per_epoch=100, learning_rate=.001)
+G = example_fully_connected_GAN(WGAN_GP ,four_clouds_example(1000), [2,10,10,5], 16, steps_per_epoch=100, learning_rate=.001)
 visualize_5D(G,show=True, title=f"after 16 epochs")
