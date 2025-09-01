@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 
 class WGAN_GP(keras.Model):
+    """WGAN with gradient penalty class"""
     def __init__(self, generator, discriminator,
                  latent_generator, real_examples,
                  batch_size=200, disc_iter=2, learning_rate=.005,
@@ -62,12 +63,14 @@ class WGAN_GP(keras.Model):
 
     # generator of real samples of size batch_size
     def get_fake_sample(self, size=None, training=False):
+        """Get a fake sample from the generator"""
         if not size:
             size = self.batch_size
         return self.generator(self.latent_generator(size), training=training)
 
     # generator of fake samples of size batch_size
     def get_real_sample(self, size=None):
+        """Get a real sample from the real examples"""
         if not size:
             size = self.batch_size
         sorted_indices = tf.range(tf.shape(self.real_examples)[0])
@@ -76,12 +79,14 @@ class WGAN_GP(keras.Model):
 
     # generator of interpolating samples of size batch_size
     def get_interpolated_sample(self, real_sample, fake_sample):
+        """Get a sample of interpolated samples"""
         u = tf.random.uniform(self.scal_shape)
         v = tf.ones(self.scal_shape) - u
         return u * real_sample + v * fake_sample
 
     # computing the gradient penalty
     def gradient_penalty(self, interpolated_sample):
+        """Compute the gradient penalty for a batch of interpolated samples"""
         with tf.GradientTape() as gp_tape:
             gp_tape.watch(interpolated_sample)
             pred = self.discriminator(interpolated_sample, training=True)
@@ -91,6 +96,7 @@ class WGAN_GP(keras.Model):
 
     # overloading train_step()
     def train_step(self, useless_argument):
+        """Train the WGAN-GP model"""
         # Train discriminator multiple times
         for _ in range(self.disc_iter):
             with tf.GradientTape() as disc_tape:
