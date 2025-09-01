@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-"""2-wgan_gp.py"""
-
+"""
+1-wgan_clip.py
+"""
 import tensorflow as tf
 from tensorflow import keras
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class WGAN_GP(keras.Model):
-    def __init__(self, generator, discriminator, latent_generator,
-                 real_examples, batch_size=200, disc_iter=2,
-                 learning_rate=.005, lambda_gp=10):
+    def __init__(self, generator, discriminator,
+                 latent_generator, real_examples,
+                 batch_size=200, disc_iter=2, learning_rate=.005,
+                 lambda_gp=10):
         super().__init__()
         self.latent_generator = latent_generator
         self.real_examples = real_examples
@@ -18,7 +22,7 @@ class WGAN_GP(keras.Model):
         self.disc_iter = disc_iter
         self.learning_rate = learning_rate
         self.beta_1 = .3
-        self.beta_2 = .0
+        self.beta_2 = .9
         self.lambda_gp = lambda_gp
         self.dims = self.real_examples.shape
         self.len_dims = tf.size(self.dims)
@@ -41,24 +45,26 @@ class WGAN_GP(keras.Model):
             loss=self.generator.loss
             )
 
-        # define the discriminator loss and optimizer
+        # define the discriminator loss and optimizer:
         self.discriminator.loss =\
             lambda real_output, fake_output: tf.reduce_mean(
-                    fake_output) - tf.reduce_mean(real_output)
+                fake_output) - tf.reduce_mean(real_output
+                                              )
         self.discriminator.optimizer = keras.optimizers.Adam(
             learning_rate=self.learning_rate,
             beta_1=self.beta_1,
             beta_2=self.beta_2
             )
-        self.discriminator.compile(optimizer=self.discriminator.optimizer,
-                                   loss=self.discriminator.loss)
+        self.discriminator.compile(
+            optimizer=self.discriminator.optimizer,
+            loss=self.discriminator.loss
+            )
 
     # generator of real samples of size batch_size
     def get_fake_sample(self, size=None, training=False):
         if not size:
             size = self.batch_size
-        return self.generator(self.latent_generator(size),
-                              training=training)
+        return self.generator(self.latent_generator(size), training=training)
 
     # generator of fake samples of size batch_size
     def get_real_sample(self, size=None):
@@ -93,9 +99,8 @@ class WGAN_GP(keras.Model):
                 fake_sample = self.get_fake_sample(training=True)
 
                 # Get interpolated sample
-                interpolated_sample = self.get_interpolated_sample(
-                    real_sample, fake_sample
-                    )
+                interpolated_sample =\
+                    self.get_interpolated_sample(real_sample, fake_sample)
 
                 # Compute discriminator outputs
                 real_output = self.discriminator(real_sample, training=True)
@@ -126,7 +131,8 @@ class WGAN_GP(keras.Model):
 
         # Compute gradients and update generator
         gen_gradients = gen_tape.gradient(
-            gen_loss, self.generator.trainable_variables)
+            gen_loss, self.generator.trainable_variables
+            )
         self.generator.optimizer.apply_gradients(
             zip(gen_gradients, self.generator.trainable_variables)
         )
