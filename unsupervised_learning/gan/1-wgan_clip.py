@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 
 class WGAN_clip(keras.Model):
+    """WGAN with weight clipping class"""
     def __init__(self, generator, discriminator, latent_generator,
                  real_examples, batch_size=200, disc_iter=2,
                  learning_rate=.005):
@@ -48,12 +49,14 @@ class WGAN_clip(keras.Model):
             loss=self.discriminator.loss)
 
     def get_fake_sample(self, size=None, training=False):
+        """Get a fake sample from the generator"""
         if not size:
             size = self.batch_size
         return self.generator(self.latent_generator(size),
                               training=training)
 
     def get_real_sample(self, size=None):
+        """Get a real sample from the real examples"""
         if not size:
             size = self.batch_size
         sorted_indices = tf.range(tf.shape(self.real_examples)[0])
