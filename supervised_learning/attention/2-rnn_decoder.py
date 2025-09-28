@@ -39,34 +39,40 @@ class RNNDecoder(tf.keras.layers.Layer):
     def __init__(self, vocab, embedding, units, batch):
         """Constructor"""
         super(RNNDecoder, self).__init__()
-        self.embedding = tf.keras.layers.Embedding(vocab, embedding)
-        self.gru = tf.keras.layers.GRU(units,
-                                       return_sequences=False,
-                                       return_state=True,
-                                       recurrent_initializer='glorot_uniform')
-        self.F = tf.keras.layers.Dense(vocab)
+        self.embedding = tf.keras.layers.Embedding(
+            vocab, embedding, 
+            embeddings_initializer='glorot_uniform'
+        )
+        self.gru = tf.keras.layers.GRU(
+            units,
+            return_sequences=False,
+            return_state=True,
+            recurrent_initializer='glorot_uniform',
+            kernel_initializer='glorot_uniform'
+        )
+        self.F = tf.keras.layers.Dense(
+            vocab, 
+            kernel_initializer='glorot_uniform'
+        )
         self.attention = SelfAttention(units)
-        self.batch = batch
 
     def call(self, x, s_prev, hidden_states):
         """Forward pass"""
         # 1. Calcular el vector de contexto usando atención
         context, _ = self.attention(s_prev, hidden_states)
+        
         # 2. Pasar x por la capa de embedding
         x = self.embedding(x)  # Shape: (batch, 1, embedding)
-
-        # 3. Concatenar contexto con x en el eje de características
-        # Expandir context para que tenga shape (batch, 1, units)
-        context = tf.expand_dims(context, 1)
-
-        # Concatenar en el eje de características:(batch, 1,
-        # units + embedding)
-        gru_input = tf.concat([context, x], axis=-1)
-
+        
+        # 3. Concatenar contexto con x en ese orden
+        # Context: (batch, units), x: (batch, 1, embedding)
+        context_expanded = tf.expand_dims(context, 1)  # (batch, 1, units)
+        concat = tf.concat([context_expanded, x], axis=-1)  # (batch, 1, units + embedding)
+        
         # 4. Pasar por la GRU
-        output, s = self.gru(gru_input, initial_state=s_prev)
-
-        # 5. Pasar por la capa densa para obtener las probabilidades
-        # Eliminar la dimensión de secuencia: (batch, units) -> (batch, vocab)
+        output, s = self.gru(concat, initial_state=s_prev)
+        
+        # 5. Pasar por la capa densa
         y = self.F(output)
+        
         return y, s
