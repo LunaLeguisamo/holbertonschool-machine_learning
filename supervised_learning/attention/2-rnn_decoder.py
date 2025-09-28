@@ -52,23 +52,21 @@ class RNNDecoder(tf.keras.layers.Layer):
         """Forward pass"""
         # 1. Calcular el vector de contexto usando atención
         context, _ = self.attention(s_prev, hidden_states)
-
         # 2. Pasar x por la capa de embedding
-        x_embedded = self.embedding(x)  # Shape: (batch, 1, embedding)
-        x_embedded = tf.reshape(
-            x_embedded, (x_embedded.shape[0], x_embedded.shape[2])
-            )
+        x = self.embedding(x)  # Shape: (batch, 1, embedding)
 
-        # 3. Concatenar contexto con x_embedded (en ese orden)
-        # context shape: (batch, units), x_embedded shape: (batch, embedding)
-        gru_input = tf.concat([context, x_embedded], axis=-1)
-        gru_input = tf.expand_dims(gru_input, 1)
+        # 3. Concatenar contexto con x en el eje de características
+        # Expandir context para que tenga shape (batch, 1, units)
+        context = tf.expand_dims(context, 1)
+
+        # Concatenar en el eje de características:(batch, 1,
+        # units + embedding)
+        gru_input = tf.concat([context, x], axis=-1)
 
         # 4. Pasar por la GRU
         output, s = self.gru(gru_input, initial_state=s_prev)
-        # output shape: (batch, units), s shape: (batch, units)
 
         # 5. Pasar por la capa densa para obtener las probabilidades
-        y = self.F(output)  # (batch, vocab)
-
+        # Eliminar la dimensión de secuencia: (batch, units) -> (batch, vocab)
+        y = self.F(output)
         return y, s
