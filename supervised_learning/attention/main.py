@@ -4,7 +4,7 @@ import os
 import random
 import numpy as np
 import tensorflow as tf
-MultiHeadAttention = __import__('6-multihead_attention').MultiHeadAttention
+EncoderBlock = __import__('7-transformer_encoder_block').EncoderBlock
 
 SEED = 0
 
@@ -14,17 +14,14 @@ random.seed(SEED)
 np.random.seed(SEED)
 tf.random.set_seed(SEED)
 
-mha = MultiHeadAttention(512, 8)
-print(mha.dm)
-print(mha.h)
-print(mha.depth)
-print(mha.Wq)
-print(mha.Wk)
-print(mha.Wv)
-print(mha.linear)
-Q = tf.convert_to_tensor(np.random.uniform(size=(50, 15, 256)).astype('float32'))
-K = tf.convert_to_tensor(np.random.uniform(size=(50, 15, 256)).astype('float32'))
-V = tf.convert_to_tensor(np.random.uniform(size=(50, 15, 256)).astype('float32'))
-output, weights = mha(Q, K, V, None)
+eblock = EncoderBlock(512, 8, 2048)
+print(eblock.mha)
+print(eblock.dense_hidden)
+print(eblock.dense_output)
+print(eblock.layernorm1)
+print(eblock.layernorm2)
+print(eblock.dropout1)
+print(eblock.dropout2)
+x = tf.random.uniform((32, 10, 512))
+output = eblock(x, True, None)
 print(output)
-print(weights)
