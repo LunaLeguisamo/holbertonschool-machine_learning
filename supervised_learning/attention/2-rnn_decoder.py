@@ -36,35 +36,39 @@ SelfAttention = __import__('1-self_attention').SelfAttention
 
 
 class RNNDecoder(tf.keras.layers.Layer):
+    """RNNDecoder class"""
     def __init__(self, vocab, embedding, units, batch):
         """Constructor"""
         super(RNNDecoder, self).__init__()
         self.embedding = tf.keras.layers.Embedding(vocab, embedding)
         self.gru = tf.keras.layers.GRU(units,
-                                       return_sequences=False,
+                                       return_sequences=True,
                                        return_state=True,
                                        recurrent_initializer='glorot_uniform')
         self.F = tf.keras.layers.Dense(vocab)
-        self.attention = SelfAttention(units)
+        # No inicializamos self.attention aquí
 
     def call(self, x, s_prev, hidden_states):
         """Forward pass"""
-        batch_size = tf.shape(x)[0]
-        
-        # 1. Calcular el vector de contexto usando atención
-        context, _ = self.attention(s_prev, hidden_states)  # (batch, units)
-        
-        # 2. Pasar x por la capa de embedding  
+        # 1. Crear nueva instancia de SelfAttention en cada call
+        attention_layer = SelfAttention(s_prev.shape[1])
+
+        # 2. Calcular el vector de contexto
+        context, _ = attention_layer(s_prev, hidden_states)
+
+        # 3. Pasar x por la capa de embedding
         x = self.embedding(x)  # (batch, 1, embedding)
-        
-        # 3. Concatenar contexto con x en ese orden
-        context_expanded = tf.expand_dims(context, 1)  # (batch, 1, units)
-        gru_input = tf.concat([context_expanded, x], axis=-1)  # (batch, 1, units + embedding)
-        
-        # 4. Pasar por la GRU
-        output, s = self.gru(gru_input, initial_state=s_prev)
-        
-        # 5. Pasar por la capa densa
+
+        # 4. Concatenar contexto con x en ese orden
+        context = tf.expand_dims(context, 1)  # (batch, 1, units)
+        # (batch, 1, units + embedding)
+        gru_input = tf.concat([context, x], axis=-1)
+
+        # 5. Pasar por la GRU
+        output, s = self.gru(gru_input)
+
+        # 6. Remover dimensión de secuencia y pasar por dense
+        output = tf.reshape(output, (-1, output.shape[2]))
         y = self.F(output)
-        
+
         return y, s
