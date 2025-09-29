@@ -3,7 +3,6 @@
 9-transformer_encoder.py
 """
 import tensorflow as tf
-import numpy as np
 positional_encoding = __import__('4-positional_encoding').positional_encoding
 EncoderBlock = __import__('7-transformer_encoder_block').EncoderBlock
 
