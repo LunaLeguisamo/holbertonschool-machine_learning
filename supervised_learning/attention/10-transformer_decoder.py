@@ -3,7 +3,6 @@
 10-transformer_decoder.py
 """
 import tensorflow as tf
-import numpy as np
 positional_encoding = __import__('4-positional_encoding').positional_encoding
 DecoderBlock = __import__('8-transformer_decoder_block').DecoderBlock
 
