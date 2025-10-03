@@ -16,7 +16,8 @@ class Dataset:
         # Load the dataset with both data and info
         dataset, info = tfds.load('ted_hrlr_translate/pt_to_en',
                                   with_info=True,
-                                  as_supervised=True)
+                                  as_supervised=True,
+                                  shuffle_files=False))
 
         # Create instance attributes
         self.data_train = dataset['train']
