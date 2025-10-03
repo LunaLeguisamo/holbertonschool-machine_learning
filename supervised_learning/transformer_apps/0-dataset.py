@@ -20,6 +20,7 @@ class Dataset:
             )
 
     def tokenize_dataset(self, data):
+        """Creates sub-word tokenizers for Portuguese and English."""
         # Extraer oraciones
         pt_texts, en_texts = [], []
         for pt, en in data:
