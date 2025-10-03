@@ -13,20 +13,16 @@ class Dataset:
 
     def __init__(self):
         """Initialize dataset and tokenizers"""
-
-        # 1. Load the dataset
-        # ted_hrlr_translate/pt_to_en is a Portuguese to English translation
-        # dataset
-        # as_supervised=True returns (input, label) tuples - here
-        # (portuguese, english)
+        # Load the dataset with both data and info
         dataset, info = tfds.load('ted_hrlr_translate/pt_to_en',
-                                  with_info=True, as_supervised=True)
+                                  with_info=True,
+                                  as_supervised=True)
 
-        # 2. Create instance attributes
-        self.data_train = dataset['train']    # Training split
-        self.data_valid = dataset['validation']  # Validation split
+        # Create instance attributes
+        self.data_train = dataset['train']
+        self.data_valid = dataset['validation']
 
-        # 3. Create tokenizers using the training data
+        # Create tokenizers using the training data
         self.tokenizer_pt, self.tokenizer_en = self.tokenize_dataset(
             self.data_train
             )
@@ -42,12 +38,12 @@ class Dataset:
             tokenizer_pt: Portuguese tokenizer
             tokenizer_en: English tokenizer
         """
-
-        # 1. Load pre-trained tokenizers
-        # neuralmind/bert-base-portuguese-cased: BERT trained on Portuguese
-        # bert-base-uncased: BERT trained on English (lowercase)
+        # Load pre-trained tokenizers
+        # Portuguese tokenizer
         tokenizer_pt = transformers.AutoTokenizer.from_pretrained(
             "neuralmind/bert-base-portuguese-cased")
+
+        # English tokenizer
         tokenizer_en = transformers.AutoTokenizer.from_pretrained(
             "bert-base-uncased")
 
