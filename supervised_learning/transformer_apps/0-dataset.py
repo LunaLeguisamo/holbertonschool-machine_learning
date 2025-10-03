@@ -5,7 +5,7 @@ Creates and preprocesses dataset for machine translation
 """
 
 import tensorflow_datasets as tfds
-from transformers import AutoTokenizer
+import transformers
 
 
 class Dataset:
@@ -46,9 +46,9 @@ class Dataset:
         # 1. Load pre-trained tokenizers
         # neuralmind/bert-base-portuguese-cased: BERT trained on Portuguese
         # bert-base-uncased: BERT trained on English (lowercase)
-        tokenizer_pt = AutoTokenizer.from_pretrained(
+        tokenizer_pt = transformers.AutoTokenizer.from_pretrained(
             "neuralmind/bert-base-portuguese-cased")
-        tokenizer_en = AutoTokenizer.from_pretrained(
+        tokenizer_en = transformers.AutoTokenizer.from_pretrained(
             "bert-base-uncased")
 
         return tokenizer_pt, tokenizer_en
