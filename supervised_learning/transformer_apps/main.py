@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
-Dataset = __import__('0-dataset').Dataset
+Dataset = __import__('1-dataset').Dataset
 
 data = Dataset()
 for pt, en in data.data_train.take(1):
-    print(pt.numpy().decode('utf-8'))
-    print(en.numpy().decode('utf-8'))
+    print(data.encode(pt, en))
 for pt, en in data.data_valid.take(1):
-    print(pt.numpy().decode('utf-8'))
-    print(en.numpy().decode('utf-8'))
-print(type(data.tokenizer_pt))
-print(type(data.tokenizer_en))
+    print(data.encode(pt, en))
