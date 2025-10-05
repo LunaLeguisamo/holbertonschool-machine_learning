@@ -8,6 +8,7 @@ import transformers
 
 
 class Dataset:
+    """Loads and preps a dataset for machine translation"""
     def __init__(self, batch_size, max_len):
         """
         Initialize dataset with data pipeline optimizations
