@@ -8,6 +8,7 @@ import transformers
 
 
 class Dataset:
+    """Loads and preps a dataset for machine translation"""
     def __init__(self):
         dataset, _ = tfds.load('ted_hrlr_translate/pt_to_en',
                                as_supervised=True,
@@ -27,6 +28,9 @@ class Dataset:
         self.data_valid = self.raw_data_valid.map(self.tf_encode)
 
     def tokenize_dataset(self, data):
+        """
+        Creates sub-word tokenizers for our dataset
+        """
         # Extraer oraciones
         pt_texts, en_texts = [], []
         for pt, en in data:
