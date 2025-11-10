@@ -1,51 +1,36 @@
 #!/usr/bin/env python3
+"""
+0-monte_carlo.py
+"""
 import numpy as np
 
 
-def monte_carlo(env, V, policy, episodes=5000,
-                max_steps=100, alpha=0.1, gamma=0.99):
+def monte_carlo(env, V, policy, episodes=5000, max_steps=100, alpha=0.1,
+                gamma=0.99):
     """
-    Performs the Monte Carlo algorithm to estimate the value function.
+    This function performs the Monte Carlo algorithm to estimate the value
+    function. It updates the value estimate V using the incremental mean.
     """
-    n_states = V.shape[0]
-    desc = env.unwrapped.desc
-    n_rows, n_cols = desc.shape
+    for episode in range(episodes):
+        state = env.reset()[0]
+        episode_data = []
 
-    for ep in range(episodes):
-        state, _ = env.reset()
-
-        states = []
-        rewards = []
-        done = False
-
-        for _ in range(max_steps):
+        # Generate episode
+        for step in range(max_steps):
             action = policy(state)
             next_state, reward, terminated, truncated, _ = env.step(action)
-            states.append(state)
-            rewards.append(reward)
-            state = next_state
-            done = terminated or truncated
-            if done:
+            episode_data.append((state, reward))
+
+            if terminated or truncated:
                 break
+            state = next_state
 
-        # Calculate returns backward
-        G = 0.0
-        visited = set()
+        G = 0
+        episode_data = np.array(episode_data, dtype=int)
 
-        for i in range(len(states) - 1, -1, -1):
-            s = states[i]
-            r = rewards[i]
-            G = r + gamma * G
-
-            if s in visited:
-                continue
-            visited.add(s)
-
-            # No updates for holes
-            row, col = divmod(s, n_cols)
-            if desc[row, col] == b'H':
-                continue
-
-            V[s] += alpha * (G - V[s])
+        for state, reward in reversed(episode_data):
+            G = reward + gamma * G
+            if state not in episode_data[:episode, 0]:
+                V[state] += alpha * (G - V[state])
 
     return V
