@@ -3,8 +3,8 @@
 import gymnasium as gym
 import numpy as np
 import random
-monte_carlo = __import__('0-monte_carlo').monte_carlo
 
+td_lambtha = __import__('1-td_lambtha').td_lambtha
 
 def set_seed(env, seed=0):
     env.reset(seed=seed)
@@ -40,4 +40,4 @@ def policy(s):
 V = np.where(env.unwrapped.desc == b'H', -1, 1).reshape(64).astype('float64')
 np.set_printoptions(precision=4)
 
-print(monte_carlo(env, V, policy).reshape((8, 8)))
+print(td_lambtha(env, V, policy, 0.9).reshape((8, 8)))
