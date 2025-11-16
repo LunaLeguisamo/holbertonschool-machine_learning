@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 
+import gymnasium as gym
 import numpy as np
-policy = __import__('policy_gradient').policy
+import random
+policy_gradient = __import__('policy_gradient').policy_gradient
 
+def set_seed(env, seed=0):
+    env.reset(seed=seed)
+    np.random.seed(seed)
+    random.seed(seed)
 
-weight = np.ndarray((4, 2), buffer=np.array([
-    [4.17022005e-01, 7.20324493e-01], 
-    [1.14374817e-04, 3.02332573e-01], 
-    [1.46755891e-01, 9.23385948e-02], 
-    [1.86260211e-01, 3.45560727e-01]
-    ]))
-state = np.ndarray((1, 4), buffer=np.array([
-    [-0.04428214,  0.01636746,  0.01196594, -0.03095031]
-    ]))
+env = gym.make('CartPole-v1')
+set_seed(env, 0)
 
-res = policy(state, weight)
-print(res)
+weight = np.random.rand(4, 2)
+state , _ = env.reset()
+print(weight)
+print(state)
+
+action, grad = policy_gradient(state, weight)
+print(action)
+print(grad)
+
+env.close()
