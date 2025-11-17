@@ -4,55 +4,45 @@ import numpy as np
 policy_gradient = __import__('policy_gradient').policy_gradient
 
 
-def train(env, nb_episodes, alpha=0.000045, gamma=0.98):
-    """
-    Train an agent using Monte-Carlo REINFORCE.
-    Return the list of scores.
-    """
-    # CartPole: 4 states, 2 actions
-    W = np.random.rand(4, 2)
-
+def train(env, nb_episodes, alpha=0.000045, gamma=0.98, show_result=False):
+    """Trains a policy gradient model"""
+    weight = np.random.rand(4, 2)
     scores = []
 
     for episode in range(nb_episodes):
         state, _ = env.reset()
-        grads = []
+        done = False
+        ep_gradients = []
         rewards = []
-        score = 0
 
-        while True:
-            # Get action and gradient
-            action, grad = policy_gradient(state, W)
+        # Render only every 1000 episodes
+        if show_result and episode % 1000 == 0:
+            env.render()
 
-            # Execute action
-            next_state, reward, terminated, truncated, _ = env.step(action)
-            done = terminated or truncated
+        while not done:
+            action, grad = policy_gradient(state, weight)
 
-            # Store data
-            grads.append(grad)
+            next_state, reward, done, _, _ = env.step(action)
+
+            ep_gradients.append(grad)
             rewards.append(reward)
-            score += reward
-
-            if done:
-                break
 
             state = next_state
 
-        # --- Compute returns ---
-        returns = np.zeros_like(rewards, dtype=np.float64)
+        # Monte-Carlo returns Gt
         G = 0
-        for t in reversed(range(len(rewards))):
-            G = rewards[t] + gamma * G
-            returns[t] = G
+        discounted_rewards = []
+        for r in reversed(rewards):
+            G = r + gamma * G
+            discounted_rewards.insert(0, G)
 
-        # --- Update weights ---
-        for grad, Gt in zip(grads, returns):
-            W += alpha * Gt * grad
+        # Update weights
+        for grad, Gt in zip(ep_gradients, discounted_rewards):
+            weight += alpha * grad * Gt
 
-        # Save score
+        score = sum(rewards)
         scores.append(score)
 
-        # Print progress
         print(f"Episode: {episode} Score: {score}")
 
     return scores
