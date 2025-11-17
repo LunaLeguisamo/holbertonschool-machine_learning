@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Function that trains an agent using"""
 import numpy as np
 policy_gradient = __import__('policy_gradient').policy_gradient
 
