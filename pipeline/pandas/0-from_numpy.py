@@ -4,7 +4,7 @@ Function that creates a pd.DataFrame
 from a np.ndarray
 """
 import pandas as pd
-import string
+
 
 def from_numpy(array):
     """
@@ -16,6 +16,6 @@ def from_numpy(array):
     Returns: the newly created pd.DataFrame
     """
     n_columns = array.shape[1]
-    alpha = list(string.ascii_uppercase[:n_columns])
+    alpha = [chr(65 + i) for i in range(n_columns)]
     df = pd.DataFrame(array, columns=alpha)
     return df
