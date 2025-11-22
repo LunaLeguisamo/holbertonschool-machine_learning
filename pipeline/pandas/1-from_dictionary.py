@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-import pandas as pd
 """
 Write a python script that creates a pd.DataFrame from a dictionary
 """
+
+import pandas as pd
 
 """
 The first column should be labeled First and have the values
