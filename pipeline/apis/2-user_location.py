@@ -10,7 +10,10 @@ import time
 import math
 import requests
 
+
 def get_user_location(url):
+    """Fetches the location of a GitHub user
+    from the given API URL."""
     try:
         resp = requests.get(url)
     except requests.RequestException:
@@ -46,6 +49,7 @@ def get_user_location(url):
     # Other statuses: return generic message (could be extended)
     return None, status
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: ./2-user_location.py <github_user_api_url>")
@@ -56,13 +60,17 @@ if __name__ == "__main__":
 
     if code == 404:
         print("Not found")
-    elif code == 403 and isinstance(result, str) and result.startswith("Reset in"):
+    elif code == 403 and isinstance(result, str)\
+            and result.startswith("Reset in"):
         print(result)
     elif code == 200:
-        # If location is None, printing None matches typical expectations
+        # If location is None, printing None matches
+        # typical expectations
         print(result)
     else:
-        # For network errors or unexpected responses, print nothing or a fallback
+        # For network errors or unexpected responses,
+        # print nothing or a fallback
         if result is None:
-            # No output required by the spec; raising a short message is helpful
+            # No output required by the spec; raising a
+            # short message is helpful
             print("Not found" if code == 404 else "")
