@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+By using the SpaceX API, create a method that
+returns the details of the first upcoming launch.
+"""
 import requests
 import sys
 
